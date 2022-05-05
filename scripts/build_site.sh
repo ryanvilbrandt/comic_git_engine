@@ -3,6 +3,7 @@ ENGINE_VERSION=$(sed -n 's/Engine version = \(.*\)/\1/p' your_content/comic_info
 echo "Engine version: $ENGINE_VERSION"
 cd comic_git_engine
 git checkout "$ENGINE_VERSION"
+cd ..
 
 echo "Install dependencies"
 python -m pip install --upgrade pip
