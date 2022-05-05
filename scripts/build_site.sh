@@ -12,6 +12,7 @@ python comic_git_engine/scripts/make_requirements_hooks_file.py
 pip install -r comic_git_engine/scripts/requirements_hooks.txt
 
 echo "Run python build script"
+printenv
 python comic_git_engine/scripts/build_site.py --delete-scheduled-posts
 
 echo "Commit files"
