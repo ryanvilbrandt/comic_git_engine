@@ -20,7 +20,7 @@ def build_jinja_environment(comic_info: RawConfigParser, template_folders: List[
 def get_markdown_parser() -> Markdown:
     global markdown_parser
     if markdown_parser is None:
-        markdown_parser = Markdown()
+        markdown_parser = Markdown(extras=["metadata"])
     return markdown_parser
 
 
@@ -117,9 +117,10 @@ def write_to_template(template_name: str, html_path: str, data_dict: Dict=None) 
             md = get_markdown_parser()
             with open(md_path) as f:
                 converted_md = md.convert(f.read())
+            metadata = converted_md.metadata
             new_data_dict = data_dict.copy()
             new_data_dict["text"] = converted_md
-            template = jinja_environment.get_template("md_page.tpl")
+            template = jinja_environment.get_template(metadata.get("template", "md_page.tpl"))
             file_contents = template.render(**new_data_dict)
 
     dir_name = os.path.dirname(html_path)
