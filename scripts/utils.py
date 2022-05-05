@@ -17,11 +17,10 @@ def build_jinja_environment(comic_info: RawConfigParser, template_folders: List[
         jinja_environment = Environment(loader=FileSystemLoader(template_folders), undefined=StrictUndefined)  # noqa
 
 
-def get_markdown_parser() -> Markdown:
+def build_markdown_parser(comic_info: RawConfigParser):
     global markdown_parser
-    if markdown_parser is None:
-        markdown_parser = Markdown(extras=["metadata"])
-    return markdown_parser
+    extras = comic_info.get("Comic Settings", "Markdown extras", fallback="")
+    markdown_parser = Markdown(extras=["metadata"] + str_to_list(extras))
 
 
 def get_comic_url(comic_info: RawConfigParser):
@@ -112,11 +111,10 @@ def write_to_template(template_name: str, html_path: str, data_dict: Dict=None) 
         except TemplateNotFound:
             theme = data_dict["theme"]
             md_path = f"your_content/themes/{theme}/pages/{template_name}.md"
-            if not theme or not os.path.isfile(md_path):
+            if not os.path.isfile(md_path):
                 raise TemplateNotFound(f"Template matching '{template_name}' not found")
-            md = get_markdown_parser()
             with open(md_path) as f:
-                converted_md = md.convert(f.read())
+                converted_md = markdown_parser.convert(f.read())
             metadata = converted_md.metadata
             new_data_dict = data_dict.copy()
             new_data_dict["text"] = converted_md
