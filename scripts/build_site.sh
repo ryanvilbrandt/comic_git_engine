@@ -1,6 +1,7 @@
 echo "Checkout the correct comic_git_engine branch"
 ENGINE_VERSION=$(sed -n 's/Engine version = \(.*\)/\1/p' your_content/comic_info.ini)
 echo "Engine version: $ENGINE_VERSION"
+cd comic_git_engine
 git checkout "$ENGINE_VERSION"
 
 echo "Install dependencies"
