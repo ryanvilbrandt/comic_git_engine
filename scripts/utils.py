@@ -84,6 +84,30 @@ def find_project_root():
                                     "running this script from within the comic_git repository.")
 
 
+def build_md_page(template_name: str, data_dict: Dict=None) -> Optional[str]:
+    """
+    Searches in the `pages` directory in the given theme directory for a file named {template_name}.md. If it doesn't
+    find it, it returns None. Otherwise, the contents of that file are parsed as markdown, and the md_page.tpl
+    template file is used to build a page using those contents. The template file to use can be overridden by the
+    "template" variable in the markdown file's metadata.
+    :param template_name: The name of the markdown file to look for, minus the `.md` file extension
+    :param data_dict: The list of Jinja2 variables to be passed to the template file when it's rendered. This will be
+    copied and a `text` field will be added to the copy with the parsed markdown file contents.
+    :return: None, if the given *.md file can't be found.
+    """
+    theme = data_dict["theme"]
+    md_path = f"your_content/themes/{theme}/pages/{template_name}.md"
+    if not os.path.isfile(md_path):
+        return None
+    with open(md_path) as f:
+        converted_md = markdown_parser.convert(f.read())
+    metadata = converted_md.metadata
+    new_data_dict = data_dict.copy()
+    new_data_dict["text"] = converted_md
+    template = jinja_environment.get_template(metadata.get("template", "md_page.tpl"))
+    return template.render(**new_data_dict)
+
+
 def write_to_template(template_name: str, html_path: str, data_dict: Dict=None) -> None:
     """
     Searches for either an HTML or a TPL file named <template_name> in first the "templates" folder of your
@@ -109,17 +133,9 @@ def write_to_template(template_name: str, html_path: str, data_dict: Dict=None) 
                 data_dict = {}
             file_contents = template.render(**data_dict)
         except TemplateNotFound:
-            theme = data_dict["theme"]
-            md_path = f"your_content/themes/{theme}/pages/{template_name}.md"
-            if not os.path.isfile(md_path):
+            file_contents = build_md_page(template_name, data_dict)
+            if file_contents is None:
                 raise TemplateNotFound(f"Template matching '{template_name}' not found")
-            with open(md_path) as f:
-                converted_md = markdown_parser.convert(f.read())
-            metadata = converted_md.metadata
-            new_data_dict = data_dict.copy()
-            new_data_dict["text"] = converted_md
-            template = jinja_environment.get_template(metadata.get("template", "md_page.tpl"))
-            file_contents = template.render(**new_data_dict)
 
     dir_name = os.path.dirname(html_path)
     if dir_name:
