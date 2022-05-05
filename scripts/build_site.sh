@@ -6,7 +6,6 @@ git checkout "$ENGINE_VERSION"
 cd ..
 
 echo "Install dependencies"
-python -m pip install --upgrade pip
 pip install -r comic_git_engine/scripts/requirements.txt
 python comic_git_engine/scripts/make_requirements_hooks_file.py
 pip install -r comic_git_engine/scripts/requirements_hooks.txt
