@@ -12,7 +12,9 @@ python comic_git_engine/scripts/make_requirements_hooks_file.py
 pip install -r comic_git_engine/scripts/requirements_hooks.txt
 
 echo "Run python build script"
-printenv
+echo "GITHUB_REPOSITORY: $1"
+export GITHUB_REPOSITORY=$1
+echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
 python comic_git_engine/scripts/build_site.py --delete-scheduled-posts
 
 echo "Commit files"
