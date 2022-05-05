@@ -3,8 +3,10 @@ from configparser import RawConfigParser
 from typing import List, Dict, Optional
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, TemplateNotFound
+from markdown2 import Markdown
 
 jinja_environment: Optional[Environment] = None
+markdown_parser: Optional[Markdown] = None
 
 
 def build_jinja_environment(comic_info: RawConfigParser, template_folders: List[str]):
@@ -13,6 +15,13 @@ def build_jinja_environment(comic_info: RawConfigParser, template_folders: List[
         jinja_environment = Environment(loader=FileSystemLoader(template_folders))  # noqa
     else:
         jinja_environment = Environment(loader=FileSystemLoader(template_folders), undefined=StrictUndefined)  # noqa
+
+
+def get_markdown_parser() -> Markdown:
+    global markdown_parser
+    if markdown_parser is None:
+        markdown_parser = Markdown()
+    return markdown_parser
 
 
 def get_comic_url(comic_info: RawConfigParser):
@@ -81,9 +90,9 @@ def write_to_template(template_name: str, html_path: str, data_dict: Dict=None) 
     Searches for either an HTML or a TPL file named <template_name> in first the "templates" folder of your
     theme directory, or the "templates" directory. It then builds that template at the specified <html_path> using
     the given <data_dict> as a list of variables to pass into the template when it's rendered.
- 
+
     :param template_name: The name of the template file or HTML file you wish to load
-    :param html_path: The path to write the HTML file, relative to the repository root. If you want it to write to a 
+    :param html_path: The path to write the HTML file, relative to the repository root. If you want it to write to a
     directory (e.g. ...github.io/comic_git/cool_stuff/), then add index.html file at the end.
     (e.g. "cool_stuff/index.html")
     :param data_dict: The dictionary of values to pass to the template when it's rendered.
@@ -101,7 +110,17 @@ def write_to_template(template_name: str, html_path: str, data_dict: Dict=None) 
                 data_dict = {}
             file_contents = template.render(**data_dict)
         except TemplateNotFound:
-            raise TemplateNotFound(f"Template matching '{template_name}' not found")
+            theme = data_dict["theme"]
+            md_path = f"your_content/themes/{theme}/pages/{template_name}.md"
+            if not theme or not os.path.isfile(md_path):
+                raise TemplateNotFound(f"Template matching '{template_name}' not found")
+            md = get_markdown_parser()
+            with open(md_path) as f:
+                converted_md = md.convert(f.read())
+            new_data_dict = data_dict.copy()
+            new_data_dict["text"] = converted_md
+            template = jinja_environment.get_template("md_page.tpl")
+            file_contents = template.render(**new_data_dict)
 
     dir_name = os.path.dirname(html_path)
     if dir_name:
