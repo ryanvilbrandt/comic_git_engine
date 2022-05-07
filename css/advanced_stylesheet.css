@@ -42,7 +42,7 @@ span.link-bar-separator {
     margin-bottom: 20px;
 }
 
-#click-for-overlay #open-image #open-image-window {
+#click-for-overlay, #open-image, #open-image-window {
     cursor: zoom-in;
 }
 
