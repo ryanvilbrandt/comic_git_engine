@@ -13,12 +13,24 @@
 {%- block content %}
     {# When text is surrounded by {{ these double curly braces }}, it's representing a variable that's passed in by
        the Python script that generates the HTML file. That value is dropped into the existing HTML with no changes.
-       For example, if the value passed in to `comic_base_dir` is `comic_git`, then `{{ comic_base_dir }}/comic` 
+       For example, if the value passed in to `comic_base_dir` is `comic_git`, then `{{ comic_base_dir }}/comic`
        becomes `/comic_git/comic` #}
     <div id="comic-page">
+        {% if _on_comic_click == "overlay" %}
+        <a id="click-for-overlay">
+        {% elif _on_comic_click == "open image" %}
+        <a id="open-image" href="{{ base_dir }}/{{ comic_path }}">
+        {% elif _on_comic_click == "open image window" %}
+        <a id="open-image-winow" href="{{ base_dir }}/{{ comic_path }}" target="_blank">
+        {% else %}
         <a href="{{ comic_base_dir }}/comic/{{ next_id }}/#comic-page">
+        {% endif %}}
             <img id="comic-image" src="{{ base_dir }}/{{ comic_path }}" title="{{ escaped_alt_text }}"/>
         </a>
+    </div>
+
+    <div id="comic-page-overlay" hidden>
+        <img id="comic-overlay-image" src="{{ base_dir }}/{{ comic_path }}" title="{{ escaped_alt_text }}"/>
     </div>
 
     {# If blocks let you check the value of a variable and then generate different HTML depending on that variable.
@@ -125,10 +137,12 @@
     </div>
 {%- endblock %}
 {%- block script %}
-{% if transcripts %}
 <script type="module">
-    import { init } from "{{ base_dir }}/comic_git_engine/js/transcript.js";
-    init();
-</script>
+    import { init_overlay } from "{{ base_dir }}/comic_git_engine/js/comic.js";
+    init_overlay();
+{% if transcripts %}
+    import { init_transcript } from "{{ base_dir }}/comic_git_engine/js/transcript.js";
+    init_transcript();
 {% endif %}
+</script>
 {%- endblock %}

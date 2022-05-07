@@ -362,6 +362,10 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
     }
     # Copy in existing page info options to the data dict, but format them so they're proper Jinja2 variable names
     d.update({format_user_variable(k): v for k, v in page_info.items()})
+    # Add an _on_comic_click option from global comic_info.ini if it doesn't exist in the per-comic info.ini
+    if "_on_comic_click" not in d:
+        d["_on_comic_click"] = comic_info.get("Comic Settings", "On comic click", fallback="Next comic")
+    d["_on_comic_click"] = d["_on_comic_click"].lower()
     theme = comic_info.get("Comic Settings", "Theme", fallback="default")
     hook_result = run_hook(theme, "extra_comic_dict_processing", [comic_folder, comic_info, d])
     if hook_result:
