@@ -295,7 +295,12 @@ def load_transcripts_from_folder(transcripts: OrderedDict, transcripts_dir: str,
             continue
         language = os.path.splitext(os.path.basename(transcript_path))[0]
         with open(transcript_path, "rb") as f:
-            transcripts[language] = MARKDOWN.convert(f.read().decode("utf-8"))
+            text = f.read()
+            try:
+                text = text.decode("utf-8")
+            except UnicodeDecodeError:
+                text = text.decode("latin-1")
+            transcripts[language] = MARKDOWN.convert(text)
 
 
 def format_user_variable(k: str) -> str:
