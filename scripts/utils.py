@@ -99,7 +99,7 @@ def build_md_page(template_name: str, data_dict: Dict=None) -> Optional[str]:
     md_path = f"your_content/themes/{theme}/pages/{template_name}.md"
     if not os.path.isfile(md_path):
         return None
-    with open(md_path) as f:
+    with open(md_path, "rb") as f:
         converted_md = markdown_parser.convert(f.read())
     metadata = converted_md.metadata
     new_data_dict = data_dict.copy()
