@@ -492,24 +492,27 @@ def write_html_files(comic_folder: str, comic_info: RawConfigParser, comic_data_
 
 def write_other_pages(comic_folder: str, comic_info: RawConfigParser, comic_data_dicts: List[Dict],
                       global_values: Dict):
+    data_dict = {}
     last_comic_page = comic_data_dicts[-1] if comic_data_dicts else {}
+    data_dict.update(last_comic_page)
+    data_dict.update(global_values)
     pages_list = get_pages_list(comic_info)
     for page in pages_list:
+        # Special handling for tag pages
         if page["template_name"] == "tagged":
-            write_tagged_pages(comic_data_dicts, global_values)
+            write_tagged_pages(comic_data_dicts, data_dict)
             continue
+        # If we're building the index or 404 pages, they should go in the root directory
         if page["template_name"].lower() in ("index", "404"):
             html_path = f"{page['template_name']}.html"
         else:
             html_path = os.path.join(page['template_name'], "index.html")
+        # If we're processing an extra comic, prepend the extra comic path
         if comic_folder:
             html_path = os.path.join(comic_folder, html_path)
         # Don't build latest page if there are no comics published
         if page["template_name"] == "latest" and not comic_data_dicts:
             continue
-        data_dict = {}
-        data_dict.update(last_comic_page)
-        data_dict.update(global_values)
         if page["title"]:
             data_dict["_title"] = page["title"]
         utils.write_to_template(page["template_name"], html_path, data_dict)
