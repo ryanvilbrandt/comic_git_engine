@@ -38,7 +38,7 @@ def add_image_tag(channel, comic_url, comic_info):
 
 def add_item(xml_parent, comic_data, comic_url, comic_info):
     global cdata_dict
-    post_id = comic_data["page_name"]
+    post_id = comic_data["page_name"].lower().replace(" ", "_").replace("&", "_")
     item = ElementTree.SubElement(xml_parent, "item")
     ElementTree.SubElement(item, "title").text = comic_data["_title"]
     ElementTree.SubElement(item, "{http://purl.org/dc/elements/1.1/}creator").text = \
