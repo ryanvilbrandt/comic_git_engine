@@ -24,7 +24,7 @@
         <a id="open-image-winow" href="{{ base_dir }}/{{ comic_path }}" target="_blank">
         {% else %}
         <a href="{{ comic_base_dir }}/comic/{{ next_id }}/#comic-page">
-        {% endif %}}
+        {% endif %}
             <img id="comic-image" src="{{ base_dir }}/{{ comic_path }}" title="{{ escaped_alt_text }}"/>
         </a>
     </div>
