@@ -375,7 +375,6 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
     hook_result = run_hook(theme, "extra_comic_dict_processing", [comic_folder, comic_info, d])
     if hook_result:
         d = hook_result
-    print(d)
     return d
 
 
