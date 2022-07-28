@@ -38,16 +38,16 @@ def add_image_tag(channel, comic_url, comic_info):
 
 def add_item(xml_parent, comic_data, comic_url, comic_info):
     global cdata_dict
-    post_id = comic_data["page_name"].lower().replace(" ", "_").replace("&", "_")
     item = ElementTree.SubElement(xml_parent, "item")
     ElementTree.SubElement(item, "title").text = comic_data["_title"]
     ElementTree.SubElement(item, "{http://purl.org/dc/elements/1.1/}creator").text = \
         comic_info.get("Comic Info", "Author")
     post_date = strptime(comic_data["_post_date"], comic_info.get("Comic Settings", "Date format"))
     ElementTree.SubElement(item, "pubDate").text = strftime("%a, %d %b %Y %H:%M:%S +0000", post_date)
-    direct_link = urljoin(comic_url, "comic/{}/".format(post_id))
+    direct_link = urljoin(comic_url, "comic/{}/".format(comic_data["page_name"]))
     ElementTree.SubElement(item, "link").text = direct_link
-    ElementTree.SubElement(item, "guid", isPermaLink="true").text = direct_link
+    guid = direct_link.lower().replace(" ", "_").replace("&", "_")
+    ElementTree.SubElement(item, "guid", isPermaLink="true").text = guid
     if "storyline" in comic_data:
         e = ElementTree.SubElement(item, "category")
         e.attrib["type"] = "storyline"
@@ -62,8 +62,9 @@ def add_item(xml_parent, comic_data, comic_url, comic_info):
             e = ElementTree.SubElement(item, "category")
             e.attrib["type"] = "tag"
             e.text = tag
-    comic_image_url = urljoin(comic_url, "your_content/comics/{}/{}".format(post_id, comic_data["_filename"]))
+    comic_image_url = urljoin(comic_url, "your_content/comics/{}/{}".format(comic_data["page_name"], comic_data["_filename"]))
     html = build_rss_post(comic_image_url, comic_data.get("escaped_alt_text"), comic_data["post_html"])
+    post_id = comic_data["page_name"].lower().replace(" ", "_").replace("&", "_")
     cdata_dict["post_id_" + post_id] = "<![CDATA[{}]]>".format(html)
     ElementTree.SubElement(item, "description").text = "{post_id_" + post_id + "}"
 
