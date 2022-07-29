@@ -24,26 +24,25 @@ def build_markdown_parser(comic_info: RawConfigParser):
 
 
 def get_comic_url(comic_info: RawConfigParser):
-    comic_domain, base_directory = None, ""
     # Let user-defined comic domain and base directory override all other values
-    if comic_info.has_option("Comic Settings", "Comic domain"):
-        comic_domain = comic_info.get("Comic Settings", "Comic domain").strip("/")
-    if comic_info.has_option("Comic Settings", "Comic subdirectory"):
-        base_directory = comic_info.get("Comic Settings", "Comic subdirectory").strip("/")
-    # If we have a CNAME file, use that for the comic domain
-    if not comic_domain and os.path.isfile("CNAME"):
-        with open("CNAME") as f:
-            comic_domain = f.read().strip('/')
-    # If this is running in GitHub and the domain and base directory were not user-defined, derive them here
-    if "GITHUB_REPOSITORY" in os.environ:
-        repo_author, repo_name = os.environ["GITHUB_REPOSITORY"].split("/")
-        if not comic_domain:
-            comic_domain = f"{repo_author}.github.io"
-        if not base_directory:
-            base_directory = repo_name
-            if base_directory.lower() == f"{repo_author.lower()}.github.io":
-                # In this case, Github will try to deploy to http://<username>.github.io/ so we unset base_directory
+    comic_domain = comic_info.get("Comic Settings", "Comic domain", fallback=None)
+    base_directory = comic_info.get("Comic Settings", "Comic subdirectory", fallback=None)
+    if comic_domain is None:
+        # If we have a CNAME file, use that for the comic domain
+        if os.path.isfile("CNAME"):
+            with open("CNAME") as f:
+                comic_domain = f.read().strip('/')
                 base_directory = ""
+        # If this is running in GitHub and the domain and base directory were not user-defined, derive them here
+        elif "GITHUB_REPOSITORY" in os.environ:
+            repo_author, repo_name = os.environ["GITHUB_REPOSITORY"].split("/")
+            if not comic_domain:
+                comic_domain = f"{repo_author}.github.io"
+            if base_directory is None:
+                base_directory = repo_name
+                if base_directory.lower() == f"{repo_author.lower()}.github.io":
+                    # In this case, Github will try to deploy to http://<username>.github.io/ so we unset base_directory
+                    base_directory = ""
     # Helpful error for dumb schmucks trying to build locally for the first time
     if not comic_domain:
         raise ValueError(
@@ -56,6 +55,9 @@ def get_comic_url(comic_info: RawConfigParser):
             comic_domain = "https://" + comic_domain
         else:
             comic_domain = "http://" + comic_domain
+    # Clean up values and make sure we don't have extraneous slashes
+    comic_domain = comic_domain.strip("/")
+    base_directory = base_directory.strip("/")
     if base_directory:
         base_directory = "/" + base_directory
     comic_url = comic_domain + base_directory
