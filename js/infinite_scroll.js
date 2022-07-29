@@ -52,9 +52,17 @@ export async function load_page(local_comic_base_dir, local_content_base_dir) {
 }
 
 async function fetch_all_json_data() {
+    console.debug(`${comic_base_dir}/comic/page_info_list.json`);
     let response = await fetch(`${comic_base_dir}/comic/page_info_list.json`);
     console.log("Fetched page info list");
-    let json = await response.json();
+    let json;
+    try {
+        json = await response.json();
+    } catch (e) {
+        console.error(e);
+        console.error(response.text());
+        throw e;
+    }
     page_info_json = json["page_info_list"];
 }
 
