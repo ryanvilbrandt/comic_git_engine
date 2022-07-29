@@ -107,7 +107,7 @@ function build_comic_div(page) {
     image_node.className = "infinite-page-image";
     console.log("Adding div for page " + page["page_name"]);
     image_node.src = `${content_base_dir}/comics/${page["page_name"]}/${page["Filename"]}`;
-    image_node.title = page["Alt text"];
+    image_node.title = page["escaped_alt_text"];
 
     link_node.appendChild(image_node);
     node.appendChild(link_node);
