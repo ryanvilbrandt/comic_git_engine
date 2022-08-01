@@ -23,7 +23,7 @@ def main():
     for extra_comic in get_extra_comics_list(comic_info):
         print(extra_comic)
         extra_comic_info = get_extra_comic_info(extra_comic, comic_info)
-        theme = extra_comic_info.get("Comic Settings", "Theme")
+        theme = extra_comic_info.get("Comic Settings", "Theme", fallback="default")
         if theme:
             requirements.update(get_requirements(theme))
             print(requirements)
