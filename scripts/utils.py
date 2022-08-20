@@ -1,4 +1,5 @@
 import os
+import re
 from configparser import RawConfigParser
 from typing import List, Dict, Optional
 
@@ -145,3 +146,20 @@ def write_to_template(template_name: str, html_path: str, data_dict: Dict=None) 
     print(f"Writing {html_path}")
     with open(html_path, "wb") as f:
         f.write(bytes(file_contents, "utf-8"))
+
+
+def read_info(filepath, to_dict=False):
+    with open(filepath, "rb") as f:
+        info_string = f.read().decode("utf-8")
+    if not re.search(r"^\[.*?]", info_string):
+        # print(filepath + " has no section")
+        info_string = "[DEFAULT]\n" + info_string
+    info = RawConfigParser()
+    info.optionxform = str
+    info.read_string(info_string)
+    if to_dict:
+        # TODO: Support multiple sections
+        if not list(info.keys()) == ["DEFAULT"]:
+            raise NotImplementedError("Configs with multiple sections not yet supported")
+        return dict(info["DEFAULT"])
+    return info

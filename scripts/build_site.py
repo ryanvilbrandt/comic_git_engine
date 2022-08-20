@@ -20,6 +20,7 @@ from pytz import timezone
 
 import utils
 from build_rss_feed import build_rss_feed
+from comic_git_engine.scripts.utils import read_info
 
 VERSION = "0.4.2"
 
@@ -64,23 +65,6 @@ def delete_output_file_space(comic_info: RawConfigParser = None):
 def setup_output_file_space(comic_info: RawConfigParser):
     # Clean workspace, i.e. delete old files
     delete_output_file_space(comic_info)
-
-
-def read_info(filepath, to_dict=False):
-    with open(filepath, "rb") as f:
-        info_string = f.read().decode("utf-8")
-    if not re.search(r"^\[.*?]", info_string):
-        # print(filepath + " has no section")
-        info_string = "[DEFAULT]\n" + info_string
-    info = RawConfigParser()
-    info.optionxform = str
-    info.read_string(info_string)
-    if to_dict:
-        # TODO: Support multiple sections
-        if not list(info.keys()) == ["DEFAULT"]:
-            raise NotImplementedError("Configs with multiple sections not yet supported")
-        return dict(info["DEFAULT"])
-    return info
 
 
 def get_links_list(comic_info: RawConfigParser):
