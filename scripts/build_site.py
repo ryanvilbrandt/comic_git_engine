@@ -20,7 +20,7 @@ from pytz import timezone
 
 import utils
 from build_rss_feed import build_rss_feed
-from comic_git_engine.scripts.utils import read_info
+from utils import read_info
 
 VERSION = "0.4.2"
 
