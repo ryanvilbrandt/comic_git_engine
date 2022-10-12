@@ -525,7 +525,7 @@ def write_tagged_pages(comic_data_dicts: List[Dict], global_values: Dict):
             utils.write_to_template("tagged", filename, data_dict)
         except Exception:
             print(f"Failed to create '{filename}' from 'tagged' template")
-            traceback.print_exc()
+            print(traceback.format_exc())
 
 
 def get_extra_comic_info(folder_name: str, comic_info: RawConfigParser):
