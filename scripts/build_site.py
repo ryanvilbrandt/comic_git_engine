@@ -4,6 +4,7 @@ import os
 import re
 import shutil
 import sys
+import traceback
 from collections import OrderedDict, defaultdict
 from configparser import RawConfigParser
 from copy import deepcopy
@@ -517,7 +518,14 @@ def write_tagged_pages(comic_data_dicts: List[Dict], global_values: Dict):
             "tagged_pages": pages
         }
         data_dict.update(global_values)
-        utils.write_to_template("tagged", f"tagged/{tag}/index.html", data_dict)
+        # Tag names can get weird, and it doesn't matter too much if their files don't get created.
+        # Catch any exceptions and print the error, but let things continue if needed.
+        filename = f"tagged/{tag}/index.html"
+        try:
+            utils.write_to_template("tagged", filename, data_dict)
+        except Exception:
+            print(f"Failed to create '{filename}' from 'tagged' template")
+            traceback.print_exc()
 
 
 def get_extra_comic_info(folder_name: str, comic_info: RawConfigParser):
