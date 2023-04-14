@@ -461,6 +461,8 @@ def write_html_files(comic_folder: str, comic_info: RawConfigParser, comic_data_
     theme = comic_info.get("Comic Settings", "Theme", fallback="default")
     if theme:
         template_folders.insert(0, f"your_content/themes/{theme}/templates")
+        if comic_folder:
+            template_folders.insert(0, f"your_content/themes/{theme}/templates/{comic_folder}")
     print(f"Template folders: {template_folders}")
     utils.build_jinja_environment(comic_info, template_folders)
     utils.build_markdown_parser(comic_info)
