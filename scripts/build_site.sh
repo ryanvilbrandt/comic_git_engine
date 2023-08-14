@@ -6,7 +6,7 @@ pip install -r comic_git_engine/scripts/requirements_hooks.txt
 echo "Run python build script"
 export GITHUB_REPOSITORY=$1
 echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
-export python_exit_code=python comic_git_engine/scripts/build_site.py --delete-scheduled-posts
+python_exit_code=$(python comic_git_engine/scripts/build_site.py --delete-scheduled-posts)
 echo "python script exit code: $python_exit_code"
 if [ $python_exit_code -ne 0 ]; then
   exit $python_exit_code
