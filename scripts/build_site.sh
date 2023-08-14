@@ -7,6 +7,10 @@ echo "Run python build script"
 export GITHUB_REPOSITORY=$1
 echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
 python comic_git_engine/scripts/build_site.py --delete-scheduled-posts
+echo "python script return code: $?"
+if [ $? -ne 0 ]; then
+  exit $?
+fi
 
 echo "Commit files"
 git config --local user.name "Github Action"
