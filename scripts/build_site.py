@@ -172,7 +172,7 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         global_values.update(extra_global_variables)
     write_html_files(comic_folder, comic_info, comic_data_dicts, global_values)
     processing_times.append((f"Write HTML files for '{comic_folder}'", time()))
-    return comic_data_dicts
+    return comic_data_dicts, global_values
 
 
 def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_scheduled_posts: bool,
@@ -577,7 +577,7 @@ def main(args: argparse.Namespace):
 
     # Build and publish pages for main comic
     print("Main comic")
-    comic_data_dicts = build_and_publish_comic_pages(
+    comic_data_dicts, global_values = build_and_publish_comic_pages(
         comic_url, "", comic_info, args.delete_scheduled_posts, args.publish_all_comics, processing_times
     )
 
@@ -595,7 +595,7 @@ def main(args: argparse.Namespace):
             args.publish_all_comics, processing_times
         )
 
-    run_hook(theme, "postprocess", [comic_info])
+    run_hook(theme, "postprocess", [comic_info, comic_data_dicts, global_values])
 
     processing_times.append(("Postprocessing hook", time()))
 
