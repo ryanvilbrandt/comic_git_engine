@@ -275,17 +275,29 @@ def get_transcripts(comic_folder: str, comic_info: RawConfigParser, page_name: s
 
 
 def load_transcripts_from_folder(transcripts: OrderedDict, transcripts_dir: str, page_name: str):
-    for transcript_path in sorted(glob(os.path.join(transcripts_dir, page_name, "*.txt"))):
-        if transcript_path.endswith("post.txt"):
-            continue
-        language = os.path.splitext(os.path.basename(transcript_path))[0]
-        with open(transcript_path, "rb") as f:
-            text = f.read()
-            try:
-                text = text.decode("utf-8")
-            except UnicodeDecodeError:
-                text = text.decode("latin-1")
-            transcripts[language] = MARKDOWN.convert(text)
+    """
+    Loads both *.txt and *.md files from the transcripts folder, as defined in the config file. If two files exist
+    with the same name (e.g. English.txt and English.md), then the *.md file will take precedence.
+    :param transcripts:
+    :param transcripts_dir:
+    :param page_name:
+    :return:
+    """
+    def search_for_extension(ext):
+        for transcript_path in sorted(glob(os.path.join(transcripts_dir, page_name, ext))):
+            # Ignore the post.txt in the comic folders
+            if transcript_path.endswith("post.txt"):
+                continue
+            language = os.path.splitext(os.path.basename(transcript_path))[0]
+            with open(transcript_path, "rb") as f:
+                text = f.read()
+                try:
+                    text = text.decode("utf-8")
+                except UnicodeDecodeError:
+                    text = text.decode("latin-1")
+                transcripts[language] = MARKDOWN.convert(text)
+    search_for_extension("*.txt")
+    search_for_extension("*.md")
 
 
 def format_user_variable(k: str) -> str:
