@@ -283,7 +283,8 @@ def load_transcripts_from_folder(transcripts: OrderedDict, transcripts_dir: str,
     :param page_name:
     :return:
     """
-    def search_for_extension(ext):
+    extensions = ["*.txt", "*.md"]
+    for ext in extensions:
         for transcript_path in sorted(glob(os.path.join(transcripts_dir, page_name, ext))):
             # Ignore the post.txt in the comic folders
             if transcript_path.endswith("post.txt"):
@@ -296,8 +297,6 @@ def load_transcripts_from_folder(transcripts: OrderedDict, transcripts_dir: str,
                 except UnicodeDecodeError:
                     text = text.decode("latin-1")
                 transcripts[language] = MARKDOWN.convert(text)
-    search_for_extension("*.txt")
-    search_for_extension("*.md")
 
 
 def format_user_variable(k: str) -> str:
