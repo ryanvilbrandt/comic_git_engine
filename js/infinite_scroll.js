@@ -1,5 +1,3 @@
-import { find_get_parameter } from "./utils.js";
-
 let page_info_json;
 let infinite_scroll_div;
 let earliest_comic_loaded = null;
@@ -78,7 +76,7 @@ function get_starting_page() {
     if (!window.location.href.includes("#")) {
         return;
     }
-    let page_name = window.location.href.split("#")[1];
+    let page_name = decodeURIComponent(window.location.href.split("#")[1]);
     console.log("Loading page named " + page_name);
     for (let i=0; i < page_info_json.length; i++) {
         console.log(page_info_json[i].page_name);
