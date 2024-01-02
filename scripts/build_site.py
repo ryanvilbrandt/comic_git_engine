@@ -225,6 +225,9 @@ def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_sc
             for key in page_info.copy():
                 if key.startswith("!"):
                     del page_info[key]
+            # Get list of transcript languages for the given page
+            transcripts = get_transcripts(comic_folder, comic_info, page_info["page_name"])
+            page_info["transcript_languages"] = list(transcripts.keys())
             hook_result = run_hook(theme, "extra_page_info_processing",
                                    [comic_folder, comic_info, page_path, page_info])
             if hook_result:
@@ -264,26 +267,26 @@ def get_transcripts(comic_folder: str, comic_info: RawConfigParser, page_name: s
         return OrderedDict()
     transcripts = OrderedDict()
     if comic_info.getboolean("Transcripts", "Load transcripts from comic folder", fallback=True):
-        load_transcripts_from_folder(transcripts, f"your_content/{comic_folder}comics", page_name)
+        transcripts.update(load_transcripts_from_folder(f"your_content/{comic_folder}comics", page_name))
     transcripts_dir = comic_info.get("Transcripts", "Transcripts folder", fallback="")
     if transcripts_dir:
-        load_transcripts_from_folder(transcripts, transcripts_dir, page_name)
+        transcripts.update(load_transcripts_from_folder(transcripts_dir, page_name))
     default_language = comic_info.get("Transcripts", "Default language", fallback="English")
     if default_language in transcripts:
         transcripts.move_to_end(default_language, last=False)
     return transcripts
 
 
-def load_transcripts_from_folder(transcripts: OrderedDict, transcripts_dir: str, page_name: str):
+def load_transcripts_from_folder(transcripts_dir: str, page_name: str):
     """
     Loads both *.txt and *.md files from the transcripts folder, as defined in the config file. If two files exist
     with the same name (e.g. English.txt and English.md), then the *.md file will take precedence.
-    :param transcripts:
     :param transcripts_dir:
     :param page_name:
     :return:
     """
     extensions = ["*.txt", "*.md"]
+    transcripts = {}
     for ext in extensions:
         for transcript_path in sorted(glob(os.path.join(transcripts_dir, page_name, ext))):
             # Ignore the post.txt in the comic folders
@@ -297,6 +300,7 @@ def load_transcripts_from_folder(transcripts: OrderedDict, transcripts_dir: str,
                 except UnicodeDecodeError:
                     text = text.decode("latin-1")
                 transcripts[language] = MARKDOWN.convert(text)
+    return transcripts
 
 
 def format_user_variable(k: str) -> str:
