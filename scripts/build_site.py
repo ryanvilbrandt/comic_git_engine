@@ -12,7 +12,7 @@ from datetime import datetime
 from glob import glob
 from importlib import import_module
 from json import dumps
-from time import strptime, strftime, perf_counter
+from time import strptime, strftime, perf_counter_ns
 from typing import Dict, List, Tuple, Any
 
 from PIL import Image
@@ -563,7 +563,7 @@ def get_extra_comic_info(folder_name: str, comic_info: RawConfigParser):
 
 def checkpoint(s: str):
     global PROCESSING_TIMES
-    PROCESSING_TIMES.append((s, perf_counter()))
+    PROCESSING_TIMES.append((s, perf_counter_ns()))
 
 
 def print_processing_times():
@@ -572,9 +572,9 @@ def print_processing_times():
     print("")
     for name, t in PROCESSING_TIMES:
         if last_processed_time is not None:
-            print("{}: {:.2f} us".format(name, (t - last_processed_time) / 1000))
+            print("{}: {:.2f} ms".format(name, (t - last_processed_time) / 1_000_000))
         last_processed_time = t
-    print("{}: {:.2f} μs".format("Total time", (PROCESSING_TIMES[-1][1] - PROCESSING_TIMES[0][1]) / 1000))
+    print("{}: {:.2f} ms".format("Total time", (PROCESSING_TIMES[-1][1] - PROCESSING_TIMES[0][1]) / 1_000_000))
 
 
 def main(args: argparse.Namespace):
