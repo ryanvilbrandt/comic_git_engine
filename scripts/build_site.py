@@ -567,6 +567,7 @@ def checkpoint(s: str):
 
 
 def print_processing_times():
+    print(PROCESSING_TIMES)
     last_processed_time = None
     print("")
     for name, t in PROCESSING_TIMES:
