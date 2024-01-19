@@ -572,7 +572,7 @@ def print_processing_times():
     print("")
     for name, t in PROCESSING_TIMES:
         if last_processed_time is not None:
-            print("{}: {:.2f} ms".format(name, (t - last_processed_time) * 1000))
+            print("{}: {:.2f} us".format(name, (t - last_processed_time) / 1000))
         last_processed_time = t
     print("{}: {:.2f} μs".format("Total time", (PROCESSING_TIMES[-1][1] - PROCESSING_TIMES[0][1]) / 1000))
 
