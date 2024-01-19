@@ -12,7 +12,7 @@ from datetime import datetime
 from glob import glob
 from importlib import import_module
 from json import dumps
-from time import strptime, time, strftime
+from time import strptime, strftime, perf_counter
 from typing import Dict, List, Tuple, Any
 
 from PIL import Image
@@ -34,6 +34,7 @@ https://github.com/ryanvilbrandt/comic_git/wiki/Extra-Features#editing-existing-
 """
 BASE_DIRECTORY = ""
 MARKDOWN = Markdown(extras=["strike", "break-on-newline"])
+PROCESSING_TIMES: List[Tuple[str, float]] = []
 
 
 def web_path(rel_path: str):
@@ -108,24 +109,24 @@ def run_hook(theme: str, func: str, args: List[Any]) -> Any:
 
 
 def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info: RawConfigParser,
-                                  delete_scheduled_posts: bool, publish_all_comics: bool, processing_times: list):
+                                  delete_scheduled_posts: bool, publish_all_comics: bool):
     page_info_list, scheduled_post_count = get_page_info_list(
         comic_folder, comic_info, delete_scheduled_posts, publish_all_comics
     )
     print([p["page_name"] for p in page_info_list])
-    processing_times.append((f"Get info for all pages in '{comic_folder}'", time()))
+    checkpoint(f"Get info for all pages in '{comic_folder}'")
 
     # Save page_info_list.json file for use by other pages
     save_page_info_json_file(comic_folder, page_info_list, scheduled_post_count)
-    processing_times.append((f"Save page_info_list.json file in '{comic_folder}'", time()))
+    checkpoint(f"Save page_info_list.json file in '{comic_folder}'")
 
     # Build full comic data dicts, to build templates with
     comic_data_dicts = build_comic_data_dicts(comic_folder, comic_info, page_info_list)
-    processing_times.append((f"Build full comic data dicts for '{comic_folder}'", time()))
+    checkpoint(f"Build full comic data dicts for '{comic_folder}'")
 
     # Create low-res and thumbnail versions of all the comic pages
     process_comic_images(comic_info, comic_data_dicts)
-    processing_times.append((f"Process comic images in '{comic_folder}'", time()))
+    checkpoint(f"Process comic images in '{comic_folder}'")
 
     # Load home page text
     if os.path.isfile(f"your_content/{comic_folder}home page.txt"):
@@ -171,7 +172,7 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
     if extra_global_variables:
         global_values.update(extra_global_variables)
     write_html_files(comic_folder, comic_info, comic_data_dicts, global_values)
-    processing_times.append((f"Write HTML files for '{comic_folder}'", time()))
+    checkpoint(f"Write HTML files for '{comic_folder}'")
     return comic_data_dicts, global_values
 
 
@@ -323,7 +324,7 @@ def format_user_variable(k: str) -> str:
     :return:
     """
     k = re.sub(r"[^a-z0-9_]+", "_", k.lower()).strip("_")
-    if k not in ("page_name"):
+    if k not in ["page_name"]:
         k = "_" + k
     return k
 
@@ -560,19 +561,24 @@ def get_extra_comic_info(folder_name: str, comic_info: RawConfigParser):
     return comic_info
 
 
-def print_processing_times(processing_times: List[Tuple[str, float]]):
+def checkpoint(s: str):
+    global PROCESSING_TIMES
+    PROCESSING_TIMES.append((s, perf_counter()))
+
+
+def print_processing_times():
     last_processed_time = None
     print("")
-    for name, t in processing_times:
+    for name, t in PROCESSING_TIMES:
         if last_processed_time is not None:
             print("{}: {:.2f} ms".format(name, (t - last_processed_time) * 1000))
         last_processed_time = t
-    print("{}: {:.2f} ms".format("Total time", (processing_times[-1][1] - processing_times[0][1]) * 1000))
+    print("{}: {:.2f} μs".format("Total time", (PROCESSING_TIMES[-1][1] - PROCESSING_TIMES[0][1]) / 1000))
 
 
 def main(args: argparse.Namespace):
     global BASE_DIRECTORY
-    processing_times = [("Start", time())]
+    checkpoint("Start")
 
     # Get site-wide settings for this comic
     utils.find_project_root()
@@ -580,25 +586,25 @@ def main(args: argparse.Namespace):
     comic_url, BASE_DIRECTORY = utils.get_comic_url(comic_info)
     theme = comic_info.get("Comic Settings", "Theme", fallback="default")
 
-    processing_times.append(("Get comic settings", time()))
+    checkpoint("Get comic settings")
 
     run_hook(theme, "preprocess", [comic_info])
 
-    processing_times.append(("Preprocessing hook", time()))
+    checkpoint("Preprocessing hook")
 
     # Setup output file space
     setup_output_file_space(comic_info)
-    processing_times.append(("Setup output file space", time()))
+    checkpoint("Setup output file space")
 
     # Build and publish pages for main comic
     print("Main comic")
     comic_data_dicts, global_values = build_and_publish_comic_pages(
-        comic_url, "", comic_info, args.delete_scheduled_posts, args.publish_all_comics, processing_times
+        comic_url, "", comic_info, args.delete_scheduled_posts, args.publish_all_comics
     )
 
     # Build RSS feed
     build_rss_feed(comic_info, comic_data_dicts)
-    processing_times.append(("Build RSS feed", time()))
+    checkpoint("Build RSS feed")
 
     # Build any extra comics that may be needed
     for extra_comic in get_extra_comics_list(comic_info):
@@ -607,14 +613,14 @@ def main(args: argparse.Namespace):
         os.makedirs(extra_comic, exist_ok=True)
         build_and_publish_comic_pages(
             comic_url, extra_comic.strip("/") + "/", extra_comic_info, args.delete_scheduled_posts,
-            args.publish_all_comics, processing_times
+            args.publish_all_comics
         )
 
     run_hook(theme, "postprocess", [comic_info, comic_data_dicts, global_values])
 
-    processing_times.append(("Postprocessing hook", time()))
+    checkpoint("Postprocessing hook")
 
-    print_processing_times(processing_times)
+    print_processing_times()
 
 
 def parse_args():
