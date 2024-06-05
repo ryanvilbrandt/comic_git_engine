@@ -13,7 +13,7 @@ from glob import glob
 from importlib import import_module
 from json import dumps
 from time import strptime, strftime, perf_counter_ns
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Tuple, Any, Optional
 
 from PIL import Image
 from markdown2 import Markdown
@@ -108,8 +108,14 @@ def run_hook(theme: str, func: str, args: List[Any]) -> Any:
     return None
 
 
-def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info: RawConfigParser,
-                                  delete_scheduled_posts: bool, publish_all_comics: bool):
+def build_and_publish_comic_pages(
+        comic_url: str,
+        comic_folder: str,
+        comic_info: RawConfigParser,
+        delete_scheduled_posts: bool,
+        publish_all_comics: bool,
+        extra_comics_dict: Optional[dict] = None,
+) -> list[dict]:
     page_info_list, scheduled_post_count = get_page_info_list(
         comic_folder, comic_info, delete_scheduled_posts, publish_all_comics
     )
@@ -162,6 +168,7 @@ def build_and_publish_comic_pages(comic_url: str, comic_folder: str, comic_info:
         "home_page_text": home_page_text,
         "google_analytics_id": comic_info.get("Google Analytics", "Tracking ID", fallback=""),
         "scheduled_post_count": scheduled_post_count,
+        "extra_comics": extra_comics_dict if extra_comics_dict is not None else {},
     }
     # Update the global values with any custom values returned by the hook.py file's extra_global_value's function
     extra_global_variables = run_hook(
@@ -495,8 +502,8 @@ def write_html_files(comic_folder: str, comic_info: RawConfigParser, comic_data_
 def write_other_pages(comic_folder: str, comic_info: RawConfigParser, comic_data_dicts: List[Dict],
                       global_values: Dict):
     base_data_dict = {}
-    last_comic_page = comic_data_dicts[-1] if comic_data_dicts else {}
-    base_data_dict.update(last_comic_page)
+    if comic_data_dicts:
+        base_data_dict.update(comic_data_dicts[-1])
     base_data_dict.update(global_values)
     pages_list = get_pages_list(comic_info)
     for page in pages_list:
@@ -597,25 +604,28 @@ def main(args: argparse.Namespace):
     setup_output_file_space(comic_info)
     checkpoint("Setup output file space")
 
+    # Build any extra comics that may be needed
+    extra_comic_values = {}
+    for extra_comic in get_extra_comics_list(comic_info):
+        print(extra_comic)
+        extra_comic_info = get_extra_comic_info(extra_comic, comic_info)
+        os.makedirs(extra_comic, exist_ok=True)
+        comic_data_dicts = build_and_publish_comic_pages(
+            comic_url, extra_comic.strip("/") + "/", extra_comic_info, args.delete_scheduled_posts,
+            args.publish_all_comics
+        )
+        extra_comic_values[extra_comic] = comic_data_dicts[-1] if comic_data_dicts else {}
+
     # Build and publish pages for main comic
     print("Main comic")
-    comic_data_dicts, global_values = build_and_publish_comic_pages(
-        comic_url, "", comic_info, args.delete_scheduled_posts, args.publish_all_comics
+    comic_data_dicts = build_and_publish_comic_pages(
+        comic_url, "", comic_info, args.delete_scheduled_posts, args.publish_all_comics, processing_times,
+        extra_comic_values
     )
 
     # Build RSS feed
     build_rss_feed(comic_info, comic_data_dicts)
     checkpoint("Build RSS feed")
-
-    # Build any extra comics that may be needed
-    for extra_comic in get_extra_comics_list(comic_info):
-        print(extra_comic)
-        extra_comic_info = get_extra_comic_info(extra_comic, comic_info)
-        os.makedirs(extra_comic, exist_ok=True)
-        build_and_publish_comic_pages(
-            comic_url, extra_comic.strip("/") + "/", extra_comic_info, args.delete_scheduled_posts,
-            args.publish_all_comics
-        )
 
     run_hook(theme, "postprocess", [comic_info, comic_data_dicts, global_values])
 
