@@ -115,7 +115,7 @@ def build_and_publish_comic_pages(
         delete_scheduled_posts: bool,
         publish_all_comics: bool,
         extra_comics_dict: Optional[dict] = None,
-) -> list[dict]:
+) -> tuple[list[dict], dict]:
     page_info_list, scheduled_post_count = get_page_info_list(
         comic_folder, comic_info, delete_scheduled_posts, publish_all_comics
     )
@@ -610,7 +610,7 @@ def main(args: argparse.Namespace):
         print(extra_comic)
         extra_comic_info = get_extra_comic_info(extra_comic, comic_info)
         os.makedirs(extra_comic, exist_ok=True)
-        comic_data_dicts = build_and_publish_comic_pages(
+        comic_data_dicts, _ = build_and_publish_comic_pages(
             comic_url, extra_comic.strip("/") + "/", extra_comic_info, args.delete_scheduled_posts,
             args.publish_all_comics
         )
@@ -618,9 +618,8 @@ def main(args: argparse.Namespace):
 
     # Build and publish pages for main comic
     print("Main comic")
-    comic_data_dicts = build_and_publish_comic_pages(
-        comic_url, "", comic_info, args.delete_scheduled_posts, args.publish_all_comics, processing_times,
-        extra_comic_values
+    comic_data_dicts, global_values = build_and_publish_comic_pages(
+        comic_url, "", comic_info, args.delete_scheduled_posts, args.publish_all_comics, extra_comic_values
     )
 
     # Build RSS feed
