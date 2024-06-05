@@ -31,6 +31,9 @@
     <link rel="stylesheet" type="text/css" href="{{ base_dir }}/your_content/themes/{{ theme }}/css/fonts.css">
     <link rel="stylesheet" type="text/css" href="{{ base_dir }}/comic_git_engine/css/advanced_stylesheet.css">
     <link rel="stylesheet" type="text/css" href="{{ base_dir }}/your_content/themes/{{ theme }}/css/stylesheet.css">
+    {%- if comic_folder != "" %}
+    <link rel="stylesheet" type="text/css" href="{{ base_dir }}/your_content/themes/{{ theme }}/css/{{ comic_folder.strip('/') }}.css">
+    {%- endif %}
     <link rel="icon" href="{{ base_dir }}/favicon.ico" type="image/x-icon" />
     <meta property="og:title" content="{{ comic_title }}" />
     <meta property="og:description" content="{{ comic_description }}" />

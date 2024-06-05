@@ -158,6 +158,7 @@ def build_and_publish_comic_pages(
         ),
         "theme": comic_info.get("Comic Settings", "Theme", fallback="default"),
         "comic_url": comic_url,
+        "comic_folder": comic_folder,
         "base_dir": BASE_DIRECTORY,
         "comic_base_dir": comic_base_dir,
         "content_base_dir": content_base_dir,
