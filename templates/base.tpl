@@ -55,6 +55,7 @@
             <img id="banner-img" alt="banner" src="{{ banner_image }}">
         </a>
     </div>
+    {%- if links %}
     <div id="links-bar">
     {# For loops let you take a list of a values and do something for each of those values. In this case,
        it runs through list of all the links provided by the [Links Bar] section of your comic_info.ini file,
@@ -64,6 +65,7 @@
         {% if not loop.last %}<span class="link-bar-separator">|</span>{% endif %}
     {%- endfor %}
     </div>
+    {%- endif %}
 
     {# This is the start of the `content` block. Nothing is here now because other templates are expected to fill it
        in on their own. It will contain everything on a webpage after the links bar and before the
