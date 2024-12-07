@@ -33,7 +33,7 @@ https://comic-git.gitbook.io/documentation/Extra-Features#editing-existing-pages
 -->
 """
 BASE_DIRECTORY = ""
-MARKDOWN = Markdown(extras=["strike", "break-on-newline"])
+MARKDOWN = Markdown(extras=["strike", "break-on-newline", "markdown-in-html"])
 PROCESSING_TIMES: List[Tuple[str, float]] = []
 
 
