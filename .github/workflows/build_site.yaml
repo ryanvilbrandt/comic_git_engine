@@ -1,0 +1,43 @@
+name: Build HTML Files
+
+on:
+  workflow_call:
+    inputs:
+      github_repository:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.12]
+
+    steps:
+      - name: Checkout caller repo
+        uses: actions/checkout@v2
+
+      - name: Switch to master branch (or create it)
+        run: git checkout -B master
+
+      - name: Reset master to match working
+        run: |
+          git fetch --all --no-tags
+          git reset --hard origin/working
+          git status
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Pull in comic_git_engine
+        run: |
+          ENGINE_VERSION=$(sed -n 's/Engine version = \(.*\)/\1/p' your_content/comic_info.ini)
+          echo "Engine version: $ENGINE_VERSION"
+          git submodule add -b "$ENGINE_VERSION" -f https://github.com/ryanvilbrandt/comic_git_engine
+
+      - name: Run build_site.sh
+        run: ./comic_git_engine/scripts/build_site.sh ${{ inputs.github_repository }}
