@@ -14,7 +14,6 @@ git config submodule.comic_git_engine.ignore all
 
 ## Pre-launch steps
 
-* 
 * Run Version update action to "1.0.0" in comic_git_engine
 * Tag branch "1.0.0" as "v1"
 * Update the Engine Version in the main comic_git to "1.0"
