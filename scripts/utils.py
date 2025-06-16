@@ -42,13 +42,13 @@ def get_comic_url(comic_info: RawConfigParser):
             if base_directory is None:
                 base_directory = repo_name
                 if base_directory.lower() == f"{repo_author.lower()}.github.io":
-                    # In this case, Github will try to deploy to http://<username>.github.io/ so we unset base_directory
+                    # In this case, GitHub will try to deploy to http://<username>.github.io/ so we unset base_directory
                     base_directory = ""
     # Helpful error for dumb schmucks trying to build locally for the first time
     if not comic_domain:
         raise ValueError(
             'Set "Comic domain" in the [Comic Settings] section of your comic_info.ini file '
-            'before building your site locally. Please see the comic_git wiki for more information.'
+            'before building your site locally. Please see the comic_git documentation for more information.'
         )
     if not comic_domain.startswith("http"):
         if (comic_info.has_option("Comic Settings", "Use https when building comic URL") and
