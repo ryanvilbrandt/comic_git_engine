@@ -103,6 +103,9 @@ def build_rss_feed(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
 
     # Build comic URL
     comic_url, _ = get_comic_url(comic_info)
+    if not comic_url.endswith("/"):
+        # To work well with urljoin
+        comic_url += "/"
 
     add_base_tags_to_channel(channel, comic_url, comic_info)
     add_image_tag(channel, comic_url, comic_info)
