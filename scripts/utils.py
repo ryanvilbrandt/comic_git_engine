@@ -50,12 +50,10 @@ def get_comic_url(comic_info: RawConfigParser):
             'Set "Comic domain" in the [Comic Settings] section of your comic_info.ini file '
             'before building your site locally. Please see the comic_git documentation for more information.'
         )
+    if comic_domain.startswith("http://"):
+        comic_domain = comic_domain.replace("http://", "https://")
     if not comic_domain.startswith("http"):
-        if (comic_info.has_option("Comic Settings", "Use https when building comic URL") and
-                comic_info.getboolean("Comic Settings", "Use https when building comic URL")):
-            comic_domain = "https://" + comic_domain
-        else:
-            comic_domain = "http://" + comic_domain
+        comic_domain = "https://" + comic_domain
     # Clean up values and make sure we don't have extraneous slashes
     comic_domain = comic_domain.strip("/")
     base_directory = base_directory.strip("/")

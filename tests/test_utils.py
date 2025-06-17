@@ -13,7 +13,7 @@ class TestUtils(unittest.TestCase):
         comic_info.add_section("Comic Settings")
         # No domain or subdirectory set
         self.assertEqual(
-            ("http://cvilbrandt.github.io/tamberlane", "/tamberlane"),
+            ("https://cvilbrandt.github.io/tamberlane", "/tamberlane"),
             utils.get_comic_url(comic_info)
         )
         # With https:// and empty subdirectory
@@ -34,14 +34,14 @@ class TestUtils(unittest.TestCase):
         comic_info.set("Comic Settings", "Comic domain", "http://www.tamberlanecomic.com")
         comic_info.set("Comic Settings", "Comic subdirectory", "")
         self.assertEqual(
-            ("http://www.tamberlanecomic.com", ""),
+            ("https://www.tamberlanecomic.com", ""),
             utils.get_comic_url(comic_info)
         )
         # With no http://
         comic_info.set("Comic Settings", "Comic domain", "tamberlanecomic.com")
         comic_info.set("Comic Settings", "Comic subdirectory", "")
         self.assertEqual(
-            ("http://tamberlanecomic.com", ""),
+            ("https://tamberlanecomic.com", ""),
             utils.get_comic_url(comic_info)
         )
         # With no http://, and don't force use https
@@ -49,7 +49,7 @@ class TestUtils(unittest.TestCase):
         comic_info.set("Comic Settings", "Comic subdirectory", "")
         comic_info.set("Comic Settings", "Use https when building comic URL", "False")
         self.assertEqual(
-            ("http://tamberlanecomic.com", ""),
+            ("https://tamberlanecomic.com", ""),
             utils.get_comic_url(comic_info)
         )
         # With no http://, and force use https
@@ -69,7 +69,7 @@ class TestUtils(unittest.TestCase):
         comic_info.add_section("Comic Settings")
         # No domain or subdirectory set
         self.assertEqual(
-            ("http://tamberlanecomic.com", ""),
+            ("https://tamberlanecomic.com", ""),
             utils.get_comic_url(comic_info)
         )
         # With https:// and empty subdirectory
@@ -86,7 +86,7 @@ class TestUtils(unittest.TestCase):
         comic_info.add_section("Comic Settings")
         # No domain or subdirectory set
         self.assertEqual(
-            ("http://cvilbrandt.github.io", ""),
+            ("https://cvilbrandt.github.io", ""),
             utils.get_comic_url(comic_info)
         )
         # With https:// and empty subdirectory
