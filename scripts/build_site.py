@@ -201,7 +201,7 @@ def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_sc
         else:
             filenames = page_info.get("Filenames") or page_info.get("Filename", "")
             if filenames:
-                page_info["image_file_names"] = [f.strip() for f in filenames.strip().split(",")]
+                page_info["image_file_names"] = utils.str_to_list(filenames)
             else:
                 # If Filenames weren't defined in the info.ini, then search through all images in the given comic
                 # folder and add any you find to the list of image files.

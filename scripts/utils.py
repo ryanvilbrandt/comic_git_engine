@@ -90,12 +90,12 @@ def find_project_root():
 def build_md_page(template_name: str, data_dict: Dict=None) -> Optional[str]:
     """
     Searches in the `pages` directory in the given theme directory for a file named {template_name}.md. If it doesn't
-    find it, it returns None. Otherwise, the contents of that file are parsed as markdown, and the md_page.tpl
+    find it, it returns None. Otherwise, the contents of that file are parsed as Markdown, and the md_page.tpl
     template file is used to build a page using those contents. The template file to use can be overridden by the
-    "template" variable in the markdown file's metadata.
-    :param template_name: The name of the markdown file to look for, minus the `.md` file extension
+    "template" variable in the Markdown file's metadata.
+    :param template_name: The name of the Markdown file to look for, minus the `.md` file extension
     :param data_dict: The list of Jinja2 variables to be passed to the template file when it's rendered. This will be
-    copied and a `text` field will be added to the copy with the parsed markdown file contents.
+     copied, and a `text` field will be added to the copy with the parsed Markdown file contents.
     :return: None, if the given *.md file can't be found.
     """
     theme = data_dict["theme"]
@@ -119,8 +119,8 @@ def write_to_template(template_name: str, html_path: str, data_dict: Dict=None) 
 
     :param template_name: The name of the template file or HTML file you wish to load
     :param html_path: The path to write the HTML file, relative to the repository root. If you want it to write to a
-    directory (e.g. ...github.io/comic_git/cool_stuff/), then add index.html file at the end.
-    (e.g. "cool_stuff/index.html")
+    directory (e.g. ...github.io/comic_git/cool_stuff/), then add "index.html" at the end.
+    (e.g., "cool_stuff/index.html")
     :param data_dict: The dictionary of values to pass to the template when it's rendered.
     :return: None
     """
