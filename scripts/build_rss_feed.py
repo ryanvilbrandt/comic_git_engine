@@ -48,7 +48,7 @@ def add_item(xml_parent, comic_data, comic_url, comic_info):
     ElementTree.SubElement(item, "link").text = direct_link
     guid = direct_link.lower().replace(" ", "_").replace("&", "_")
     ElementTree.SubElement(item, "guid", isPermaLink="true").text = guid
-    if "storyline" in comic_data:
+    if "_storyline" in comic_data:
         e = ElementTree.SubElement(item, "category")
         e.attrib["type"] = "storyline"
         e.text = comic_data["_storyline"]
@@ -62,19 +62,22 @@ def add_item(xml_parent, comic_data, comic_url, comic_info):
             e = ElementTree.SubElement(item, "category")
             e.attrib["type"] = "tag"
             e.text = tag
-    comic_image_url = urljoin(comic_url, "your_content/comics/{}/{}".format(comic_data["page_name"], comic_data["_filename"]))
-    html = build_rss_post(comic_image_url, comic_data.get("escaped_alt_text"), comic_data["post_html"])
+    html = build_rss_post(comic_url, comic_data["comic_paths"], comic_data.get("escaped_alt_text"), comic_data["post_html"])
     post_id = comic_data["page_name"].lower().replace(" ", "_").replace("&", "_")
     cdata_dict["post_id_" + post_id] = "<![CDATA[{}]]>".format(html)
     ElementTree.SubElement(item, "description").text = "{post_id_" + post_id + "}"
 
 
-def build_rss_post(comic_image_url, alt_text, post_html):
-    comic_image = '<img src="{}"{}>'.format(
-        comic_image_url,
-        ' alt_text="{}"'.format(alt_text.replace(r'"', r'\"')) if alt_text else ""
-    )
-    return "<p>{}</p>\n\n<hr>\n\n{}".format(comic_image, post_html)
+def build_rss_post(comic_url: str, comic_paths: list[str], alt_text: str, post_html: str):
+    comic_images = []
+    for comic_path in comic_paths:
+        comic_images.append(
+            '<p><img src="{}"{}></p>'.format(
+                urljoin(comic_url, comic_path),
+                ' alt_text="{}"'.format(alt_text.replace(r'"', r'\"')) if alt_text else ""
+            )
+        )
+    return "\n".join(comic_images) + "\n\n<hr>\n\n{}".format(post_html)
 
 
 def pretty_xml(element):
