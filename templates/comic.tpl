@@ -16,21 +16,23 @@
        For example, if the value passed in to `comic_base_dir` is `comic_git`, then `{{ comic_base_dir }}/comic`
        becomes `/comic_git/comic` #}
     <div id="comic-page">
+        {%- for comic_path in comic_paths %}
         {% if _on_comic_click == "overlay" %}
         <a id="click-for-overlay">
         {% elif _on_comic_click == "open image" %}
         <a id="open-image" href="{{ base_dir }}/{{ comic_path }}">
         {% elif _on_comic_click == "open image window" %}
-        <a id="open-image-winow" href="{{ base_dir }}/{{ comic_path }}" target="_blank">
+        <a id="open-image-window" href="{{ base_dir }}/{{ comic_path }}" target="_blank">
         {% else %}
         <a href="{{ comic_base_dir }}/comic/{{ next_id }}/#comic-page">
         {% endif %}
-            <img id="comic-image" src="{{ base_dir }}/{{ comic_path }}" title="{{ escaped_alt_text }}"/>
+            <img class="comic-image" src="{{ base_dir }}/{{ comic_path }}" title="{{ escaped_alt_text }}"/>
         </a>
+        {%- endfor %}
     </div>
 
     <div id="comic-page-overlay" hidden>
-        <img id="comic-overlay-image" src="{{ base_dir }}/{{ comic_path }}" title="{{ escaped_alt_text }}"/>
+        <img id="comic-overlay-image" src="{{ base_dir }}/{{ comic_paths[0] }}" title="{{ escaped_alt_text }}"/>
     </div>
 
     {# If blocks let you check the value of a variable and then generate different HTML depending on that variable.

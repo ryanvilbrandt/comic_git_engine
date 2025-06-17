@@ -98,17 +98,20 @@ function build_comic_div(page) {
     node.className = "infinite-page";
     node.id = page["page_name"];
 
-    let link_node = document.createElement("a");
-    link_node.href = `${comic_base_dir}/comic/${page["page_name"]}/`;
+    // Make a link and image node for each file in the list of image_file_names
+    for (let image_filename of page["image_file_names"]) {
+        let link_node = document.createElement("a");
+        link_node.href = `${comic_base_dir}/comic/${page["page_name"]}/`;
 
-    let image_node = document.createElement("img");
-    image_node.className = "infinite-page-image";
-    console.log("Adding div for page " + page["page_name"]);
-    image_node.src = `${content_base_dir}/comics/${page["page_name"]}/${page["Filename"]}`;
-    image_node.title = page["escaped_alt_text"];
+        let image_node = document.createElement("img");
+        image_node.className = "infinite-page-image";
+        console.log("Adding div for page " + page["page_name"]);
+        image_node.src = `${content_base_dir}/comics/${page["page_name"]}/${image_filename}`;
+        image_node.title = page["Alt text"];
 
-    link_node.appendChild(image_node);
-    node.appendChild(link_node);
+        link_node.appendChild(image_node);
+        node.appendChild(link_node);
+    }
     return node;
 }
 

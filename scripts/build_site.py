@@ -184,7 +184,6 @@ def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_sc
     print(f"Local time is {local_time}")
     page_info_list = []
     scheduled_post_count = 0
-    auto_detect_comic_images = comic_info.getboolean("Comic Settings", "Auto-detect comic images", fallback=False)
     theme = comic_info.get("Comic Settings", "Theme", fallback="default")
     for page_path in glob(f"your_content/{comic_folder}comics/*/"):
         filepath = f"{page_path}info.ini"
@@ -200,23 +199,20 @@ def get_page_info_list(comic_folder: str, comic_info: RawConfigParser, delete_sc
                 print(f"Deleting {page_path}")
                 shutil.rmtree(page_path)
         else:
-            if not page_info.get("Filename", ""):
-                if not auto_detect_comic_images:
-                    raise FileNotFoundError(f"Comic image filename must be provided in {page_path}info.ini")
+            filenames = page_info.get("Filenames") or page_info.get("Filename", "")
+            if filenames:
+                page_info["image_file_names"] = [f.strip() for f in filenames.strip().split(",")]
+            else:
+                # If Filenames weren't defined in the info.ini, then search through all images in the given comic
+                # folder and add any you find to the list of image files.
+                # Skip any image files whose names start with an underscore.
                 image_files = []
                 for filename in os.listdir(page_path):
-                    if filename == "thumbnail.jpg":
+                    if filename.startswith("_"):
                         continue
                     if re.search(r"\.(jpg|jpeg|png|tif|tiff|gif|bmp|webp|webv|svg|eps)$", filename):
                         image_files.append(filename)
-                if len(image_files) != 1:
-                    raise FileNotFoundError(
-                        f"Found {len(image_files)} images when attempting to auto-detect image files in {page_path}. "
-                        f"({image_files}) When using the 'Auto-detect comic images' option, you must not have any "
-                        f"image file in your comic folder other than your comic page and your archive thumbnail "
-                        f"(thumbnail.jpg)."
-                    )
-                page_info["Filename"] = image_files[0]
+                page_info["image_file_names"] = sorted(image_files)
             page_info["page_name"] = os.path.basename(os.path.normpath(page_path))
             page_info["Storyline"] = page_info.get("Storyline", "")
             page_info["Characters"] = utils.str_to_list(page_info.get("Characters", ""))
@@ -307,9 +303,9 @@ def load_transcripts_from_folder(transcripts_dir: str, page_name: str):
 def format_user_variable(k: str) -> str:
     """
     Option names passed in by the user from their info.ini files can have any string values like "Post date" or
-    "This page is full of spiders!!1". The option names are then passed in to Jinja2 templates as variable names.
+    "This page is full of spiders!!1". The option names are then passed on to Jinja2 templates as variable names.
     Unfortunately, Jinja2 variable names are much more limited in what characters they can contain than
-    option names, i.e. no spaces or hyphens.
+    option names, i.e., no spaces or hyphens.
 
     To work around this, we will replace all non-alphanumeric (and non-underscore) characters with an underscore.
     Multiples of those characters in a row will be converted to a single underscore. We will also convert all
@@ -354,8 +350,8 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
                 post_html.append(f.read().decode("utf-8"))
     post_html = MARKDOWN.convert("\n\n".join(post_html))
     d = {
-        "comic_path": os.path.join(page_dir, page_info["Filename"]),
-        "thumbnail_path": os.path.join(page_dir, "thumbnail.jpg"),
+        "comic_paths": [os.path.join(page_dir, f) for f in page_info["image_file_names"]],
+        "thumbnail_path": os.path.join(page_dir, "_thumbnail.jpg"),
         "escaped_alt_text": html.escape(page_info["Alt text"]),
         "first_id": first_id,
         "previous_id": previous_id,
@@ -387,7 +383,7 @@ def build_comic_data_dicts(comic_folder: str, comic_info: RawConfigParser, page_
 
 
 def resize(im, size):
-    im_w, im_h = im.size
+    image_width, image_height = im.size
     if "," in size:
         # Convert a string of the form "100, 36" into a 2-tuple of ints (100, 36)
         w, h = size.strip().split(",")
@@ -396,15 +392,15 @@ def resize(im, size):
         # Convert a percentage (50%) into a new size (50, 18)
         size = float(size.strip().strip("%"))
         size = size / 100
-        w, h = im_w * size, im_h * size
+        w, h = image_width * size, image_height * size
     elif size.endswith("h"):
-        # Scale to set height, and adjust width to keep aspect ratio
+        # Scale to set height and adjust width to keep the same aspect ratio
         h = int(size[:-1].strip())
-        w = im_w / im_h * h
+        w = image_width / image_height * h
     elif size.endswith("w"):
-        # Scale to set width, and adjust height to keep aspect ratio
+        # Scale to set width and adjust height to keep the same aspect ratio
         w = int(size[:-1].strip())
-        h = im_h / im_w * w
+        h = image_height / image_width * w
     else:
         raise ValueError("Unknown resize value: {!r}".format(size))
     return im.resize((int(w), int(h)))
@@ -427,13 +423,13 @@ def save_image(im, path):
             raise
 
 
-def process_comic_image(comic_info, comic_page_path):
+def create_comic_thumbnail(comic_info, comic_page_path):
     section = "Image Reprocessing"
     comic_page_dir = os.path.dirname(comic_page_path)
     comic_page_name, comic_page_ext = os.path.splitext(os.path.basename(comic_page_path))
     with open(comic_page_path, "rb") as f:
         im = Image.open(f)
-        thumbnail_path = os.path.join(comic_page_dir, "thumbnail.jpg")
+        thumbnail_path = os.path.join(comic_page_dir, "_thumbnail.jpg")
         if comic_info.getboolean(section, "Overwrite existing images") or not os.path.isfile(thumbnail_path):
             print(f"Creating thumbnail for {comic_page_name}")
             thumb_im = resize(im, comic_info.get(section, "Thumbnail size"))
@@ -444,7 +440,8 @@ def process_comic_images(comic_info: RawConfigParser, comic_data_dicts: List[Dic
     section = "Image Reprocessing"
     if comic_info.getboolean(section, "Create thumbnails"):
         for comic_data in comic_data_dicts:
-            process_comic_image(comic_info, comic_data["comic_path"])
+            # We don't support multiple thumbnails per page, so pick the first image in the list
+            create_comic_thumbnail(comic_info, comic_data["comic_paths"][0])
 
 
 def get_storylines(comic_info: RawConfigParser, comic_data_dicts: List[Dict]) -> OrderedDict:

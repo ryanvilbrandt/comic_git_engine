@@ -21,7 +21,9 @@
     {# Comic Page #}
     <div id="comic-page">
         <a href="{{ comic_base_dir }}/comic/{{ next_id }}/#comic-page">
-            <img id="comic-image" src="{{ base_dir }}/{{ comic_path }}" title="{{ escaped_alt_text }}"/>
+            {%- for comic_path in comic_paths %}
+            <img class="comic-image" src="{{ base_dir }}/{{ comic_path }}" title="{{ escaped_alt_text }}"/>
+            {%- endfor %}
         </a>
     </div>
 
