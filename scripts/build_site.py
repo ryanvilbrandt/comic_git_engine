@@ -171,6 +171,7 @@ def build_and_publish_comic_pages(
     )
     if extra_global_variables:
         global_values.update(extra_global_variables)
+    checkpoint(f"Run hook for extra global values in '{comic_folder}'")
     write_html_files(comic_folder, comic_info, comic_data_dicts, global_values)
     checkpoint(f"Write HTML files for '{comic_folder}'")
     return comic_data_dicts, global_values
