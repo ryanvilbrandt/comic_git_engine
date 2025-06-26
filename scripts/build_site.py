@@ -327,7 +327,8 @@ def format_user_variable(k: str) -> str:
 
 def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info: dict,
                       first_id: str, previous_id: str, current_id: str, next_id: str, last_id: str):
-    print("Building page {}...".format(page_info["page_name"]))
+    t = strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{t}] Building page {page_info['page_name']}...")
     page_dir = f"your_content/{comic_folder}comics/{page_info['page_name']}/"
     archive_post_date = strftime(
         comic_info.get("Archive", "Date format"),

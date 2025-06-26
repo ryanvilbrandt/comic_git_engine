@@ -1,6 +1,7 @@
 import os
 import re
 from configparser import RawConfigParser
+from time import strftime
 from typing import List, Dict, Optional
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, TemplateNotFound
@@ -141,7 +142,8 @@ def write_to_template(template_name: str, html_path: str, data_dict: Dict=None) 
     dir_name = os.path.dirname(html_path)
     if dir_name:
         os.makedirs(dir_name, exist_ok=True)
-    print(f"Writing {html_path}")
+    t = strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{t}] Writing {html_path}")
     with open(html_path, "wb") as f:
         f.write(bytes(file_contents, "utf-8"))
 
