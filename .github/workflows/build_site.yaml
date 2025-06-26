@@ -20,7 +20,7 @@ jobs:
 
       - name: Reset master to match working
         run: |
-          git fetch --all --no-tags
+          git fetch --depth 1 --no-tags origin working
           git reset --hard origin/working
           git status
 
