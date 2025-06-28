@@ -530,12 +530,12 @@ def write_tagged_pages(comic_data_dicts: List[Dict], global_values: Dict):
         for tag in page.get("_tags", []):
             tags[tag].append(page)
     for tag, pages in tags.items():
-        data_dict = {
+        data_dict = global_values.copy()
+        data_dict.update({
             "_title": f"Posts tagged with {tag}",
             "tag": tag,
             "tagged_pages": pages
-        }
-        data_dict.update(global_values)
+        })
         # Tag names can get weird, and it doesn't matter too much if their files don't get created.
         # Catch any exceptions and print the error, but let things continue if needed.
         filename = f"tagged/{tag}/index.html"
