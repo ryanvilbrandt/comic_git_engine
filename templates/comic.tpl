@@ -20,13 +20,13 @@
         {% if _on_comic_click == "overlay" %}
         <a id="click-for-overlay">
         {% elif _on_comic_click == "open image" %}
-        <a id="open-image" href="{{ base_dir }}/{{ comic_path }}">
+        <a id="open-image" href="{{ base_dir }}/{{ comic_paths[0] }}">
         {% elif _on_comic_click == "open image window" %}
-        <a id="open-image-window" href="{{ base_dir }}/{{ comic_path }}" target="_blank">
+        <a id="open-image-window" href="{{ base_dir }}/{{ comic_paths[0] }}" target="_blank">
         {% else %}
         <a href="{{ comic_base_dir }}/comic/{{ next_id }}/#comic-page">
         {% endif %}
-            <img class="comic-image" src="{{ base_dir }}/{{ comic_path }}" title="{{ escaped_alt_text }}"/>
+            <img class="comic-image" src="{{ base_dir }}/{{ comic_paths[0] }}" title="{{ escaped_alt_text }}"/>
         </a>
         {%- endfor %}
     </div>
@@ -79,7 +79,7 @@
         <h3 id="post-date">Posted on: {{ _post_date }}</h3>
         {%- if _storyline %}
             <div id="storyline">
-                {# `| replace(" ", "-")` takes the value in the variable, in this case `storyline`, and replaces all
+                {# `| replace(" ", "-")` takes the value in the variable, in this case `_storyline`, and replaces all
                    spaces with hyphens. This is important when building links to other parts of the site. #}
                 Storyline: <a href="{{ comic_base_dir }}/archive/#archive-section-{{ _storyline | replace(" ", "-") }}">{{ _storyline }}</a>
             </div>

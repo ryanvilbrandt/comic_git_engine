@@ -410,7 +410,7 @@ def resize(im, size):
 
 def save_image(im, path):
     try:
-        # If saving as JPEG, force convert to RGB first
+        # If saving as JPEG, force-convert to RGB first
         if path.lower().endswith("jpg") or path.lower().endswith("jpeg"):
             if im.mode != 'RGB':
                 im = im.convert('RGB')
@@ -494,7 +494,12 @@ def write_html_files(comic_folder: str, comic_info: RawConfigParser, comic_data_
 def write_other_pages(comic_folder: str, comic_info: RawConfigParser, comic_data_dicts: List[Dict],
                       global_values: Dict):
     base_data_dict = {}
-    if comic_data_dicts:
+    if not comic_data_dicts:
+        print("You're publishing a website with no comic pages. Are you sure you want that??", file=sys.stderr)
+        # Set a default page title, in case of a situation like wanting to
+        # TODO Replace with a default comic_data_dict
+        base_data_dict.update({"_title": "Index"})
+    else:
         base_data_dict.update(comic_data_dicts[-1])
     base_data_dict.update(global_values)
     pages_list = get_pages_list(comic_info)
@@ -542,8 +547,8 @@ def write_tagged_pages(comic_data_dicts: List[Dict], global_values: Dict):
         try:
             utils.write_to_template("tagged", filename, data_dict)
         except Exception:
-            print(f"Failed to create '{filename}' from 'tagged' template")
-            print(traceback.format_exc())
+            print(f"Failed to create '{filename}' from 'tagged' template", file=sys.stderr)
+            print(traceback.format_exc(), file=sys.stderr)
 
 
 def get_extra_comic_info(folder_name: str, comic_info: RawConfigParser):

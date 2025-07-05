@@ -112,9 +112,12 @@ def build_md_page(template_name: str, data_dict: Dict=None) -> Optional[str]:
 
 def write_to_template(template_name: str, html_path: str, data_dict: Dict=None) -> None:
     """
-    Searches for either an HTML or a TPL file named <template_name> in first the "templates" folder of your
-    theme directory, or the "templates" directory. It then builds that template at the specified <html_path> using
-    the given <data_dict> as a list of variables to pass into the template when it's rendered.
+    Searches for an MD, HTML, or TPL file named `template_name` in the "templates" folder of your
+    theme directory, or the "templates" directory. It then builds that template at the specified `html_path` using
+    the given `data_dict` as a list of variables to pass into the template when it's rendered.
+
+    Will prioritize an MD or HTML file over a TPL file so that a user can easily replace any default template with their own files.
+    E.g., We'd prefer to run a user's `archive.html` over the default `archive.tpl`
 
     :param template_name: The name of the template file or HTML file you wish to load
     :param html_path: The path to write the HTML file, relative to the repository root. If you want it to write to a
@@ -125,19 +128,18 @@ def write_to_template(template_name: str, html_path: str, data_dict: Dict=None) 
     """
     if jinja_environment is None:
         raise RuntimeError("Jinja environment was not initialized before write_to_template was called.")
-    try:
-        file_contents = jinja_environment.get_template(template_name + ".html").render()
-    except TemplateNotFound:
-        # If a matching *.html file can't be found, try to find a matching *.tpl file
-        try:
-            template = jinja_environment.get_template(template_name + ".tpl")
-            if data_dict is None:
-                data_dict = {}
-            file_contents = template.render(**data_dict)
-        except TemplateNotFound:
-            file_contents = build_md_page(template_name, data_dict)
-            if file_contents is None:
-                raise TemplateNotFound(f"Template matching '{template_name}' not found")
+    if data_dict is None:
+        data_dict = {}
+    file_contents = build_md_page(template_name, data_dict)
+    if file_contents is None:
+        for ext in (".html", ".tpl"):
+            try:
+                file_contents = jinja_environment.get_template(template_name + ext).render(**data_dict)
+                break
+            except TemplateNotFound:
+                pass
+        else:
+            raise TemplateNotFound(f"Template matching '{template_name}' not found")
 
     dir_name = os.path.dirname(html_path)
     if dir_name:

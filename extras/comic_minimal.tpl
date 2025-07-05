@@ -22,7 +22,7 @@
     <div id="comic-page">
         <a href="{{ comic_base_dir }}/comic/{{ next_id }}/#comic-page">
             {%- for comic_path in comic_paths %}
-            <img class="comic-image" src="{{ base_dir }}/{{ comic_path }}" title="{{ escaped_alt_text }}"/>
+            <img class="comic-image" src="{{ base_dir }}/{{ comic_paths[0] }}" title="{{ escaped_alt_text }}"/>
             {%- endfor %}
         </a>
     </div>
@@ -48,12 +48,12 @@
     {# The comic "blurb" at the bottom with title, post date, tags, etc #}
     <div id="blurb">
         <h1 id="post-title">{{ _title }}</h1>
-        <h3 id="post-date">Posted on: {{ post_date }}</h3>
+        <h3 id="post-date">Posted on: {{ _post_date }}</h3>
 
         {# The storyline this page is in, with a link to the first page in that storyline #}
         {%- if _storyline %}
             <div id="storyline">
-                Storyline: <a href="{{ comic_base_dir }}/comic/{{ storyline_id }}/#comic-page">{{ _storyline }}</a>
+                Storyline: <a href="{{ comic_base_dir }}/comic/{{ _storyline_id }}/#comic-page">{{ _storyline }}</a>
             </div>
         {%- endif %}
 

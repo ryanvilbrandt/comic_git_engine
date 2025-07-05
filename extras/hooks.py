@@ -88,7 +88,7 @@ def build_other_pages(comic_folder, comic_info, comic_data_dicts):
     # utils.write_to_template("infinite_scroll", "path/to/html/index.html", comic_data_dicts[-1])
 
 
-def postprocess(comic_info):
+def postprocess(comic_info, comic_data_dicts, global_values):
     """
     Runs at the very end of the comic_git build process. Can be used to do any miscellaneous cleanup you might need.
 
