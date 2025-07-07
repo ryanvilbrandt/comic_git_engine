@@ -18,10 +18,10 @@ jobs:
       - name: Switch to master branch (or create it)
         run: git checkout -B master
 
-      - name: Reset master to match working
+      - name: Reset master to match current branch
         run: |
-          git fetch --depth 1 --no-tags origin working
-          git reset --hard origin/working
+          git fetch --depth 1 --no-tags origin $GITHUB_REF_NAME
+          git reset --hard origin/$GITHUB_REF_NAME
           git status
 
       - name: Set up Python
