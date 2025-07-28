@@ -8,9 +8,11 @@ git config submodule.comic_git_engine.ignore all
 
 # TODO for v1.0 launch
 
-* Get updated comic images from Caytlin
+* Get updated comic images from Caytlin for the showcase
 * Update comic_git_showcase
 * Update comic_git to what the website should look like for a new user
+  * Update navigation icons to not use Tamberlane's icons
+  * Add preview_image.png for the social media preview
 * Write instructions for how to update from comic_git v0.3 to comic_git v1.0
 
 ## Update instructions notes
@@ -27,3 +29,7 @@ git config submodule.comic_git_engine.ignore all
 ## Post-launch steps
 
 * Update comicgit.com to point to comic_git_showcase
+
+# Post 1.0 TODO
+
+* Webring functionality

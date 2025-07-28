@@ -351,7 +351,16 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
             with open(post_text_path, "rb") as f:
                 post_html.append(f.read().decode("utf-8"))
     post_html = MARKDOWN.convert("\n\n".join(post_html))
+    # Figure out page_title from the info.ini or comic page file names
+    if "Title" in page_info:
+        page_title = page_info["Title"]
+    elif page_info["image_file_names"]:
+        # If Title isn't defined in the info.ini, use the filename of the first image, minus the extension
+        page_title = os.path.splitext(page_info["image_file_names"][0])[0]
+    else:
+        page_title = ""
     d = {
+        "page_title": page_title,
         "comic_paths": [os.path.join(page_dir, f) for f in page_info["image_file_names"]],
         "thumbnail_path": os.path.join(page_dir, "_thumbnail.jpg"),
         "escaped_alt_text": html.escape(page_info["Alt text"]),
@@ -366,6 +375,9 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
     }
     # Copy in existing page info options to the data dict, but format them so they're proper Jinja2 variable names
     d.update({format_user_variable(k): v for k, v in page_info.items()})
+    # Add _title if it wasn't defined in page_info
+    if "_title" not in page_info:
+        d["_title"] = page_title
     # Add an _on_comic_click option from global comic_info.ini if it doesn't exist in the per-comic info.ini
     if "_on_comic_click" not in d:
         d["_on_comic_click"] = comic_info.get("Comic Settings", "On comic click", fallback="Next comic")

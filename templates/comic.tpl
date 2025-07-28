@@ -75,7 +75,7 @@
     </div>
 
     <div id="blurb">
-        <h1 id="post-title">{{ _title }}</h1>
+        <h1 id="post-title">{{ page_title }}</h1>
         <h3 id="post-date">Posted on: {{ _post_date }}</h3>
         {%- if _storyline %}
             <div id="storyline">
