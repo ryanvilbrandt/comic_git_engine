@@ -34,10 +34,10 @@ jobs:
           ENGINE_VERSION=$(sed -n 's/Engine version = \(.*\)/\1/p' your_content/comic_info.ini)
           echo "Engine version: $ENGINE_VERSION"
           echo "Removing submodule if it exists..."
-          git submodule deinit -f comic_git_engine/ 
-          rm -rf .git/modules/comic_git_engine/
-          rm -rf comic_git_engine/
-          git rm -f comic_git_engine/
+          git submodule deinit -f comic_git_engine/ || true
+          rm -rf .git/modules/comic_git_engine/ || true
+          rm -rf comic_git_engine/ || true
+          git rm -f comic_git_engine/ || true
           git submodule add -b "$ENGINE_VERSION" -f https://github.com/ryanvilbrandt/comic_git_engine
 
       - name: Install dependencies
