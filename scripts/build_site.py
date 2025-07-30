@@ -23,7 +23,7 @@ import utils
 from build_rss_feed import build_rss_feed
 from utils import read_info
 
-VERSION = "0.4.4"
+VERSION = "0.4.5"
 
 BASE_DIRECTORY = ""
 MARKDOWN = Markdown(extras=["strike", "break-on-newline", "markdown-in-html"])
