@@ -33,7 +33,7 @@ jobs:
         run: |
           ENGINE_VERSION=$(sed -n 's/Engine version = \(.*\)/\1/p' your_content/comic_info.ini)
           echo "Engine version: $ENGINE_VERSION"
-          git rm -rf comic_git_engine/
+          rm -rf comic_git_engine/
           git submodule add -b "$ENGINE_VERSION" -f https://github.com/ryanvilbrandt/comic_git_engine
 
       - name: Install dependencies
