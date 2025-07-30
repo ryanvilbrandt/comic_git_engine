@@ -20,13 +20,13 @@
         {% if _on_comic_click == "overlay" %}
         <a id="click-for-overlay">
         {% elif _on_comic_click == "open image" %}
-        <a id="open-image" href="{{ base_dir }}/{{ comic_paths[0] }}">
+        <a id="open-image" href="{{ base_dir }}/{{ comic_path }}">
         {% elif _on_comic_click == "open image window" %}
-        <a id="open-image-window" href="{{ base_dir }}/{{ comic_paths[0] }}" target="_blank">
+        <a id="open-image-window" href="{{ base_dir }}/{{ comic_path }}" target="_blank">
         {% else %}
         <a href="{{ comic_base_dir }}/comic/{{ next_id }}/#comic-page">
         {% endif %}
-            <img class="comic-image" src="{{ base_dir }}/{{ comic_paths[0] }}" title="{{ escaped_alt_text }}"/>
+            <img class="comic-image" src="{{ base_dir }}/{{ comic_path }}" title="{{ escaped_alt_text }}"/>
         </a>
         {%- endfor %}
     </div>
