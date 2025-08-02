@@ -13,12 +13,8 @@ git config submodule.comic_git_engine.ignore all
 * Make sure comic_git_showcase works with the new engine
 * Update comic_git to what the website should look like for a new user
   * Update navigation icons to not use Tamberlane's icons
-  * Add preview_image.png for the social media preview
-* Write instructions for how to update from comic_git v0.3 to comic_git v1.0
 
 ## Update instructions notes
-
-* Add `.nojekyll` file to the root of the repo to allow files starting with underscores to be served.
 
 ## Pre-launch steps
 
