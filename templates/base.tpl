@@ -46,8 +46,8 @@ https://comic-git.gitbook.io/documentation/advanced-editing/themes#editing-exist
     <meta property="og:type" content="website" />
     <meta property="og:url" content="{{ comic_url }}/" />
     <meta property="og:image" content="{{ comic_url + '/your_content/images/preview_image.png' }}" />
-    <meta property="og:image:width" content="100px" />
-    <meta property="og:image:height" content="100px" />
+    <meta property="og:image:width" content="100" />
+    <meta property="og:image:height" content="100" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ _title }} - {{ comic_title }}</title>
     {%- endblock %}
