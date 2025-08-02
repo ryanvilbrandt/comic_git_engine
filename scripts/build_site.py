@@ -577,13 +577,15 @@ def get_extra_comic_info(folder_name: str, comic_info: RawConfigParser):
     return comic_info
 
 
-def checkpoint(s: str):
+def checkpoint(s: str, clear: bool = False):
     global PROCESSING_TIMES
-    PROCESSING_TIMES.append((s, perf_counter_ns()))
+    if clear:
+        PROCESSING_TIMES = [(s, perf_counter_ns())]
+    else:
+        PROCESSING_TIMES.append((s, perf_counter_ns()))
 
 
 def print_processing_times():
-    print(PROCESSING_TIMES)
     last_processed_time = None
     print("")
     for name, t in PROCESSING_TIMES:
@@ -593,9 +595,9 @@ def print_processing_times():
     print("{}: {:.2f} ms".format("Total time", (PROCESSING_TIMES[-1][1] - PROCESSING_TIMES[0][1]) / 1_000_000))
 
 
-def main(args: argparse.Namespace):
+def main(delete_scheduled_posts: bool = False, publish_all_comics: bool = False):
     global BASE_DIRECTORY
-    checkpoint("Start")
+    checkpoint("Start", clear=True)
 
     # Get site-wide settings for this comic
     utils.find_project_root()
@@ -609,7 +611,7 @@ def main(args: argparse.Namespace):
 
     checkpoint("Preprocessing hook")
 
-    # Setup output file space
+    # Set up the output file space
     setup_output_file_space(comic_info)
     checkpoint("Setup output file space")
 
@@ -620,18 +622,18 @@ def main(args: argparse.Namespace):
         extra_comic_info = get_extra_comic_info(extra_comic, comic_info)
         os.makedirs(extra_comic, exist_ok=True)
         comic_data_dicts, _ = build_and_publish_comic_pages(
-            comic_url, extra_comic.strip("/") + "/", extra_comic_info, args.delete_scheduled_posts,
-            args.publish_all_comics
+            comic_url, extra_comic.strip("/") + "/", extra_comic_info, delete_scheduled_posts,
+            publish_all_comics
         )
         extra_comic_values[extra_comic] = comic_data_dicts[-1] if comic_data_dicts else {}
 
-    # Build and publish pages for main comic
+    # Build and publish pages for the main comic
     print("Main comic")
     comic_data_dicts, global_values = build_and_publish_comic_pages(
-        comic_url, "", comic_info, args.delete_scheduled_posts, args.publish_all_comics, extra_comic_values
+        comic_url, "", comic_info, delete_scheduled_posts, publish_all_comics, extra_comic_values
     )
 
-    # Build RSS feed
+    # Build the RSS feed
     build_rss_feed(comic_info, comic_data_dicts)
     checkpoint("Build RSS feed")
 
@@ -661,4 +663,5 @@ def parse_args():
 
 
 if __name__ == "__main__":
-    main(parse_args())
+    args = parse_args()
+    main(args.delete_scheduled_posts, args.publish_all_comics)

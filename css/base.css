@@ -1,0 +1,56 @@
+body {
+    text-align: center;
+}
+
+#container {
+    display: inline-block;
+    text-align: center;
+    margin: 15px;
+    padding: 30px;
+}
+
+#banner {
+    margin-bottom: 15px;
+}
+
+#links-bar {
+    margin-bottom: 15px;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+}
+
+.link-bar-link {
+    transition-duration: 0.2s;
+}
+
+.link-bar-link:hover {
+    transition-duration: 0.2s;
+}
+
+.link-bar-separator {
+    margin: 0 10px;
+}
+
+/* Styles <a> links to look like buttons with rounded borders. */
+.button {
+    display: inline-block;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 1.2em;
+    transition: ease 0.2s;
+    text-decoration: none;
+}
+
+/* The blue background with the dotted borders that shows up on most pages. */
+#blurb {
+    display: inline-block;
+    text-align: left;
+    max-width: 100%;
+    margin-bottom: 20px;
+    padding: 15px 15px 10px 15px;
+}
+
+#powered-by {
+    font-size: 0.7em;
+}

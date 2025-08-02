@@ -10,6 +10,7 @@ git config submodule.comic_git_engine.ignore all
 
 * Get updated comic images from Caytlin for the showcase
 * Update comic_git_showcase
+* Make sure comic_git_showcase works with the new engine
 * Update comic_git to what the website should look like for a new user
   * Update navigation icons to not use Tamberlane's icons
   * Add preview_image.png for the social media preview
