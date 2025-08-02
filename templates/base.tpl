@@ -74,7 +74,7 @@
     {% block content %}{% endblock %}
 
     <div id="powered-by">
-        Powered by <a id="powered-by-link" href="https://ryanvilbrandt.github.io/comic_git_dev">comic_git</a> v{{ version }}
+        Powered by <a id="powered-by-link" href="https://ryanvilbrandt.github.io/comic_git">comic_git</a> v{{ version }}
     </div>
 </div>
 {% endblock %}
