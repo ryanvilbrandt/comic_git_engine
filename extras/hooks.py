@@ -63,8 +63,8 @@ def extra_global_values(comic_folder, comic_info, comic_data_dicts):
     comic that's currently being built. Use this value if you want to return different global values depending on what
     comic is being built.
     :param comic_info: The current comic's comic_info.ini file parsed into a RawConfigParser object.
-    :param comic_data_dicts: List of comic data dicts that were built during the previous processing steps.
-    :return: dict of additional global template variables
+    :param comic_data_dicts: The list of comic data dicts that were built during the previous processing steps.
+    :return: Dictionary of additional global template variables
     """
     return {}
 
@@ -78,8 +78,8 @@ def build_other_pages(comic_folder, comic_info, comic_data_dicts):
     comic that's currently being built. Use this value if you want to return different global values depending on what
     comic is being built.
     :param comic_info: The current comic's comic_info.ini file parsed into a RawConfigParser object.
-    :param comic_data_dicts: List of comic data dicts that were built during the previous processing steps. Each data
-    dict also contains the global values passed in to all templates when they're built.
+    :param comic_data_dicts: The list of comic data dicts that were built during the previous processing steps.
+    Each data dict also contains the global values passed in to all templates when they're built.
     :return: None
     """
     # You can use comic_data_dicts[-1] to pass the last comic_data_dict to the template so it can have access to all
@@ -93,6 +93,9 @@ def postprocess(comic_info, comic_data_dicts, global_values):
     Runs at the very end of the comic_git build process. Can be used to do any miscellaneous cleanup you might need.
 
     :param comic_info: The main comic's comic_info.ini file parsed into a RawConfigParser object.
+    :param comic_data_dicts: The list of comic data dicts that were built during the previous processing steps.
+    Each data dict also contains the global values passed in to all templates when they're built.
+    :param global_values: A dictionary of the Jinja variables that were passed to all templates when they're built.
     :return: None
     """
     pass

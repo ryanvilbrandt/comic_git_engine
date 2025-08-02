@@ -163,7 +163,7 @@ def build_and_publish_comic_pages(
         "comic_base_dir": comic_base_dir,
         "content_base_dir": content_base_dir,
         "links": get_links_list(comic_info),
-        "use_images_in_navigation_bar": comic_info.getboolean("Comic Settings", "Use images in navigation bar"),
+        "use_images_in_navigation_bar": comic_info.getboolean("Comic Settings", "Use images in navigation bar", fallback=False),
         "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
         "storylines": get_storylines(comic_info, comic_data_dicts),
         "home_page_text": home_page_text,
@@ -339,13 +339,17 @@ def create_comic_data(comic_folder: str, comic_info: RawConfigParser, page_info:
     t = strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{t}] Building page {page_info['page_name']}...")
     page_dir = f"your_content/{comic_folder}comics/{page_info['page_name']}/"
-    archive_post_date = strftime(
-        comic_info.get("Archive", "Date format"),
-        strptime(
-            page_info["Post date"],
-            comic_info.get("Comic Settings", "Date format")
+    archive_date_format = comic_info.get("Archive", "Date format")
+    if archive_date_format:
+        archive_post_date = strftime(
+            archive_date_format,
+            strptime(
+                page_info["Post date"],
+                comic_info.get("Comic Settings", "Date format")
+            )
         )
-    )
+    else:
+        archive_post_date = page_info["Post date"]
     post_html = []
     post_text_paths = [
         f"your_content/{comic_folder}before post text.txt",
