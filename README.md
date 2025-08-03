@@ -12,7 +12,7 @@ git config submodule.comic_git_engine.ignore all
 * Update comic_git_showcase
 * Make sure comic_git_showcase works with the new engine
 * Update comic_git to what the website should look like for a new user
-  * Update navigation icons to not use Tamberlane's icons
+  * Update Adding Comic Pages documentation
 
 ## Update instructions notes
 
