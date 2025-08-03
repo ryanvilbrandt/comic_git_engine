@@ -466,9 +466,13 @@ def create_comic_thumbnail(comic_info, comic_page_path):
 
 
 def process_comic_images(comic_info: RawConfigParser, comic_data_dicts: List[Dict]):
-    section = "Image Reprocessing"
-    if comic_info.getboolean(section, "Create thumbnails"):
+    if comic_info.getboolean("Image Reprocessing", "Create thumbnails"):
         for comic_data in comic_data_dicts:
+            if not comic_data["comic_paths"]:
+                raise ValueError(
+                    f"No images found for page '{comic_data['page_name']}'. Either add an image for that page, or disable "
+                    f"the 'Create thumbnails' option in the [Image Reprocessing] section."
+                )
             # We don't support multiple thumbnails per page, so pick the first image in the list
             create_comic_thumbnail(comic_info, comic_data["comic_paths"][0])
 

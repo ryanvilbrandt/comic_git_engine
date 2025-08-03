@@ -16,6 +16,7 @@
        the Python script that generates the HTML file. That value is dropped into the existing HTML with no changes.
        For example, if the value passed in to `comic_base_dir` is `comic_git`, then `{{ comic_base_dir }}/comic`
        becomes `/comic_git/comic` #}
+    {%- if comic_paths %}
     <div id="comic-page">
         {%- for comic_path in comic_paths %}
         {% if _on_comic_click == "overlay" %}
@@ -35,6 +36,7 @@
     <div id="comic-page-overlay" hidden>
         <img id="comic-overlay-image" src="{{ base_dir }}/{{ comic_paths[0] }}" title="{{ escaped_alt_text }}"/>
     </div>
+    {% endif %}
 
     {# If blocks let you check the value of a variable and then generate different HTML depending on that variable.
        The if block below will generate non-functioning links for `First` and `Previous` if the current page is the
