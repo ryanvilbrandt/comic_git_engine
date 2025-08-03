@@ -8,25 +8,19 @@ git config submodule.comic_git_engine.ignore all
 
 # TODO for v1.0 launch
 
-* Get updated comic images from Caytlin for the showcase
-* Update comic_git_showcase
-* Make sure comic_git_showcase works with the new engine
 * Update comic_git to what the website should look like for a new user
-  * Update Adding Comic Pages documentation
-
-## Update instructions notes
 
 ## Pre-launch steps
 
+* Write release notes
+* Copy comic_git_dev content over to comic_git
 * Run Version update action to "1.0.0" in comic_git_engine
 * Tag branch "1.0.0" as "v1"
 * Update the Engine Version in the main comic_git to "1.0"
 * Update the action call in the main comic_git to use "v1"
 
-## Post-launch steps
-
-* Update comicgit.com to point to comic_git_showcase
-
 # Post 1.0 TODO
 
 * Webring functionality
+* Get updated comic images from Caytlin for the showcase
+* Update comic_git_showcase
