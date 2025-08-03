@@ -25,14 +25,14 @@
     object-fit: contain;
 }
 
-#navigation-bar {
+.navigation-bar {
     display: flex;
     margin: 0 auto 20px auto;
     font-weight: bold;
     justify-content: center;
 }
 
-a.navigation-button, a.navigation-button-disabled {
+.navigation-button, .navigation-button-disabled {
     padding: 0 20px;
     white-space: nowrap;
 }

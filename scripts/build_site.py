@@ -168,13 +168,16 @@ def build_and_publish_comic_pages(
         "comic_base_dir": comic_base_dir,
         "content_base_dir": content_base_dir,
         "links": get_links_list(comic_info),
-        "use_images_in_navigation_bar": comic_info.getboolean("Comic Settings", "Use images in navigation bar", fallback=False),
         "use_thumbnails": comic_info.getboolean("Archive", "Use thumbnails"),
         "storylines": get_storylines(comic_info, comic_data_dicts),
         "home_page_text": home_page_text,
         "google_analytics_id": comic_info.get("Google Analytics", "Tracking ID", fallback=""),
         "scheduled_post_count": scheduled_post_count,
         "extra_comics": extra_comics_dict if extra_comics_dict is not None else {},
+        "use_images_in_navigation_bar": comic_info.getboolean("Navigation Bar", "Use images", fallback=False),
+        "navigation_bar_above_comic": comic_info.getboolean("Navigation Bar", "Above comic", fallback=False),
+        "navigation_bar_below_comic": comic_info.getboolean("Navigation Bar", "Below comic", fallback=True),
+        "navigation_bar_below_blurb": comic_info.getboolean("Navigation Bar", "Below blurb", fallback=False),
     }
     # Update the global values with any custom values returned by the hook.py file's extra_global_value's function
     extra_global_variables = run_hook(
