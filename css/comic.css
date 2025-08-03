@@ -37,16 +37,6 @@
     white-space: nowrap;
 }
 
-/* Below is just some code to make monospaced text in the blurb a little more readable */
-#blurb code {
-    font-size: 120%;
-    background-color: white;
-    border: 1px solid gray;
-    border-radius: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
-}
-
 #post-title {
     margin-top: 5px;
     margin-bottom: 10px;
