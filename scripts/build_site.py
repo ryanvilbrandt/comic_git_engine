@@ -135,9 +135,12 @@ def build_and_publish_comic_pages(
     checkpoint(f"Process comic images in '{comic_folder}'")
 
     # Load home page text
-    if os.path.isfile(f"your_content/{comic_folder}home page.txt"):
-        with open(f"your_content/{comic_folder}home page.txt", "rb") as f:
-            home_page_text = MARKDOWN.convert(f.read().decode("utf-8"))
+    for ext in ("txt", "html"):
+        path = f"your_content/{comic_folder}home page.{ext}"
+        if os.path.isfile(path):
+            with open(path, "rb") as f:
+                home_page_text = MARKDOWN.convert(f.read().decode("utf-8"))
+            break
     else:
         home_page_text = ""
 
